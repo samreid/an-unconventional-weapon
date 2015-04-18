@@ -35,6 +35,8 @@ define( function( require ) {
   var WOOT = new Sound( wootSound );
 
   var gravity = new Vector2( 0, 9.8 * 200 );
+  var firstSmash = true;
+  var lettersTranslating = false;
 
   var sawReady = false;
   var inited = false;
@@ -85,7 +87,7 @@ define( function( require ) {
     sentence.centerX = DEFAULT_LAYOUT_BOUNDS.centerX;
     sentence.centerY = DEFAULT_LAYOUT_BOUNDS.centerY;
     sentence.getChildAt( 11 ).translate( -delta, 0 );
-    sentence.getChildAt( 11 ).delta = delta;
+    sentence.getChildAt( 11 ).delta = -delta;
     sentence.getChildAt( 9 ).translate( delta, 0 );
     sentence.getChildAt( 9 ).delta = delta;
     sentence.getChildAt( 5 ).translate( -delta, 0 );
@@ -132,15 +134,23 @@ define( function( require ) {
         this.playerNode.velocity.y = Math.abs( this.playerNode.velocity.y );
         this.playerNode.top = this.sentence.bottom + 10;
         SMASH.play();
-        for ( var i = 0; i < this.sentence.getChildrenCount(); i++ ) {
-          var letter = this.sentence.getChildAt( i );
-          if ( !letter.bonked && letter.text !== ' ' && letter.text !== 'w' ) {
-            var x = letter.centerX;
-            letter.scale( -1, 1 );
-            letter.centerX = x;
-            letter.bonked = true;
-            letter.rotating = true;
-            break;
+
+        if ( firstSmash ) {
+          firstSmash = false;
+          lettersTranslating = true;
+        }
+        else {
+
+          for ( var i = 0; i < this.sentence.getChildrenCount(); i++ ) {
+            var letter = this.sentence.getChildAt( i );
+            if ( !letter.bonked && letter.text !== ' ' && letter.text !== 'w' ) {
+              var x = letter.centerX;
+              letter.scale( -1, 1 );
+              letter.centerX = x;
+              letter.bonked = true;
+              letter.rotating = true;
+              break;
+            }
           }
         }
       }
@@ -158,6 +168,16 @@ define( function( require ) {
           letter.setMatrix( Matrix3.scaling( letter.sx, 1 ) );
           letter.center = center;
         }
+        if ( lettersTranslating ) {
+          if ( letter.delta ) {
+
+            // TODO: animate toward the target.
+            letter.translate( -letter.delta, 0 );
+          }
+        }
+      }
+      if ( lettersTranslating ) {
+        lettersTranslating = false;
       }
 
       this.playerNode.position = this.playerNode.position.plus( this.playerNode.velocity.timesScalar( dt ) );

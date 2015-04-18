@@ -27,19 +27,28 @@ define( function( require ) {
   var smashSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/smash' );
   var crinkleSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/crinkle' );
   var wootSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/woot' );
+  var popSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/pop' );
 
   // constants
   var SMASH = new Sound( smashSound );
   var CRINKLE = new Sound( crinkleSound );
   var WOOT = new Sound( wootSound );
+  var POP = new Sound( popSound );
 
   var gravity = new Vector2( 0, 9.8 * 200 );
 
+  var lastPopTime = Date.now();
   var inited = false;
   var fallingLetters = [];
 
   var startTime = Date.now();
   var lastLetterTime = Date.now();
+
+  var collected = [];
+  var achievedGUN = false;
+
+  var enemies = [];
+  var bullets = [];
 
   /**
    * @param {AnUnconventionalWeaponModel} anUnconventionalWeaponModel
@@ -70,6 +79,17 @@ define( function( require ) {
       lastLetterTime = Date.now();
     }
     startTime = Date.now();
+
+    for ( var i = 0; i < 6; i++ ) {
+      var enemy = new Rectangle( 2000 + i * 500, 0, 150, 150, {
+        fill: 'red',
+        stroke: 'black',
+        lineWidth: 2,
+        bottom: this.ground.top - Math.random() * 100
+      } );
+      this.scene.addChild( enemy );
+      enemies.push( enemy );
+    }
   }
 
   return inherit( ScreenView, AnUnconventionalWeaponScreenView, {
@@ -79,7 +99,7 @@ define( function( require ) {
       for ( var k = 0; k < letters.length; k++ ) {
         var letter = letters[ k ];
         var physicalText = new PhysicalText( letter, {
-          centerX: Math.random() * 1000 - 500 + this.playerNode.x,
+          centerX: Math.abs( Math.random() * 1400 - 700 + this.playerNode.x ),
           centerY: Math.random() * 3000 - 4000,
           fontSize: 60
         } );
@@ -99,11 +119,13 @@ define( function( require ) {
       }
       for ( var i = 0; i < fallingLetters.length; i++ ) {
         var fallingLetter = fallingLetters[ i ];
-        fallingLetter.velocity.y = fallingLetter.velocity.y + gravity.y * dt / 2;
-        fallingLetter.position.x += fallingLetter.velocity.x * dt;
-        fallingLetter.position.y += fallingLetter.velocity.y * dt;
+        if ( !fallingLetter.bullet ) {
+          fallingLetter.velocity.y = fallingLetter.velocity.y + gravity.y * dt / 2;
+          fallingLetter.position.x += fallingLetter.velocity.x * dt;
+          fallingLetter.position.y += fallingLetter.velocity.y * dt;
+        }
 
-        if ( fallingLetter.position.y > DEFAULT_LAYOUT_BOUNDS.bottom - 50 ) {
+        if ( fallingLetter.position.y > DEFAULT_LAYOUT_BOUNDS.bottom - 50 && !fallingLetter.bullet ) {
           fallingLetter.position.y = DEFAULT_LAYOUT_BOUNDS.bottom - 50;
 
           if ( !fallingLetter.onGround ) {
@@ -111,8 +133,73 @@ define( function( require ) {
           }
           fallingLetter.onGround = true;
         }
+        if ( fallingLetter.collected && !fallingLetter.bullet ) {
+          fallingLetter.position.x = this.playerNode.position.x + 20 +
+                                     (fallingLetter.text === 'G' ? 0 :
+                                      fallingLetter.text === 'U' ? 40 :
+                                      80);
+          fallingLetter.position.y = this.playerNode.position.y;
+        }
+        if ( fallingLetter.bullet ) {
+          fallingLetter.position.x = fallingLetter.position.x + 40;
+        }
         fallingLetter.setTranslation( fallingLetter.position.x, fallingLetter.position.y );
+      }
 
+      for ( var i = 0; i < fallingLetters.length; i++ ) {
+        var fallingLetter = fallingLetters[ i ];
+        if ( fallingLetter.onGround ) {
+          if ( fallingLetter.bounds.intersectsBounds( this.playerNode.bounds ) ) {
+            if ( collected.length === 0 && fallingLetter.text === 'G' ) {
+              fallingLetter.collected = true;
+              collected.push( fallingLetter );
+            }
+            else if ( collected.length === 1 && fallingLetter.text === 'U' ) {
+              fallingLetter.collected = true;
+              collected.push( fallingLetter );
+            }
+            else if ( collected.length === 2 && fallingLetter.text === 'N' ) {
+              fallingLetter.collected = true;
+              collected.push( fallingLetter );
+              achievedGUN = true;
+            }
+          }
+        }
+      }
+      var toRemove = [];
+      var alreadyHitOnce = false;
+      var enemiesToRemove = [];
+      for ( var i = 0; i < enemies.length; i++ ) {
+        var enemy = enemies[ i ];
+        enemy.translate( -2 - Math.random(), 0 );
+        for ( var k = 0; k < bullets.length; k++ ) {
+          var bullet = bullets[ k ];
+          if ( bullet.bounds.intersectsBounds( enemy.bounds ) ) {
+            enemiesToRemove.push( enemy );
+            this.scene.removeChild( enemy );
+            this.scene.removeChild( bullet );
+            console.log( 'removed bulled', bullet.text );
+            toRemove.push( bullet );
+            alreadyHitOnce = true;
+          }
+        }
+        if ( alreadyHitOnce ) {
+          break;
+        }
+      }
+      for ( var i = 0; i < toRemove.length; i++ ) {
+        var item = toRemove[ i ];
+        var index = bullets.indexOf( item );
+        if ( index !== -1 ) {
+          bullets.splice( index, 1 );
+        }
+      }
+      for ( var i = 0; i < enemiesToRemove.length; i++ ) {
+        var item = enemiesToRemove[ i ];
+        var index = enemies.indexOf( item );
+        if ( index !== -1 ) {
+          enemies.splice( index, 1 );
+        }
       }
 
       if ( Input.pressedKeys[ Input.KEY_LEFT_ARROW ] ) {
@@ -125,8 +212,17 @@ define( function( require ) {
         this.playerNode.velocity.x = this.playerNode.velocity.x * 0.9;// exponential decay for stopping.
       }
 
-      if ( Input.pressedKeys[ Input.KEY_SPACE ] && swordReady ) {
-        //swingingSword = true;
+      if ( Input.pressedKeys[ Input.KEY_SPACE ] && collected.length > 0 && achievedGUN ) {
+        if ( Date.now() - lastPopTime > 300 ) {
+          POP.play();
+          lastPopTime = Date.now();
+          var bullet = collected.pop();
+          bullet.bullet = true;
+          bullets.push( bullet );
+          if ( collected.length === 0 ) {
+            achievedGUN = false;
+          }
+        }
       }
 
       if ( Input.pressedKeys[ Input.KEY_UP_ARROW ] && this.playerNode.onGround ) {

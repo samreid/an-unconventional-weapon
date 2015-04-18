@@ -36,6 +36,10 @@ define( function( require ) {
   var gravity = new Vector2( 0, 9.8 * 200 );
 
   var inited = false;
+  var fallingLetters = [];
+
+  var startTime = Date.now();
+  var lastLetterTime = Date.now();
 
   /**
    * @param {AnUnconventionalWeaponModel} anUnconventionalWeaponModel
@@ -60,15 +64,55 @@ define( function( require ) {
 
     this.barrier = new Rectangle( 0, 0, 2000, 2000, { bottom: this.ground.top, x: 2500, fill: 'red' } );
     this.scene.addChild( this.barrier );
+
+    for ( var i = 0; i < 1; i++ ) {
+      this.addLetter();
+      lastLetterTime = Date.now();
+    }
+    startTime = Date.now();
   }
 
   return inherit( ScreenView, AnUnconventionalWeaponScreenView, {
 
+    addLetter: function() {
+      var letters = [ 'G', 'U', 'N' ];
+      for ( var k = 0; k < letters.length; k++ ) {
+        var letter = letters[ k ];
+        var physicalText = new PhysicalText( letter, {
+          centerX: Math.random() * 1000 - 500 + this.playerNode.x,
+          centerY: Math.random() * 3000 - 4000,
+          fontSize: 60
+        } );
+        this.scene.addChild( physicalText );
+        fallingLetters.push( physicalText );
+      }
+      lastLetterTime = Date.now();
+    },
     // Called by the animation loop. Optional, so if your view has no animation, you can omit this.
     step: function( dt ) {
       if ( !inited ) {
         Input.focusedTrailProperty.value = this.getUniqueTrail();
         inited = true;
+      }
+      if ( Date.now() - lastLetterTime > 3000 ) {
+        this.addLetter();
+      }
+      for ( var i = 0; i < fallingLetters.length; i++ ) {
+        var fallingLetter = fallingLetters[ i ];
+        fallingLetter.velocity.y = fallingLetter.velocity.y + gravity.y * dt / 2;
+        fallingLetter.position.x += fallingLetter.velocity.x * dt;
+        fallingLetter.position.y += fallingLetter.velocity.y * dt;
+
+        if ( fallingLetter.position.y > DEFAULT_LAYOUT_BOUNDS.bottom - 50 ) {
+          fallingLetter.position.y = DEFAULT_LAYOUT_BOUNDS.bottom - 50;
+
+          //if ( !this.playerNode.onGround ) {
+          //  SMASH.play();
+          //}
+          //this.playerNode.onGround = true;
+        }
+        fallingLetter.setTranslation( fallingLetter.position.x, fallingLetter.position.y );
+
       }
 
       if ( Input.pressedKeys[ Input.KEY_LEFT_ARROW ] ) {

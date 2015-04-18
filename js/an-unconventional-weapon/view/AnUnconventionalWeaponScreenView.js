@@ -11,9 +11,10 @@ define( function( require ) {
   // modules
   var inherit = require( 'PHET_CORE/inherit' );
   var LevelSword = require( 'AN_UNCONVENTIONAL_WEAPON/an-unconventional-weapon/view/LevelSword' );
+  var LevelGun = require( 'AN_UNCONVENTIONAL_WEAPON/an-unconventional-weapon/view/LevelGun' );
   var ScreenView = require( 'JOIST/ScreenView' );
 
-  var levels = [ LevelSword, LevelSword ];
+  var levels = [ LevelGun, LevelSword ];
   var levelIndex = 0;
 
   /**

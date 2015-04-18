@@ -46,6 +46,7 @@ define( function( require ) {
 
   var collected = [];
   var achievedGUN = false;
+  var bumpTime = Date.now();
 
   var enemies = [];
   var bullets = [];
@@ -217,6 +218,9 @@ define( function( require ) {
       else {
         this.playerNode.velocity.x = this.playerNode.velocity.x * 0.9;// exponential decay for stopping.
       }
+      if ( Date.now() - bumpTime < 1000 ) {
+        this.playerNode.velocity.x = -500;
+      }
 
       if ( Input.pressedKeys[ Input.KEY_SPACE ] && collected.length > 0 && achievedGUN ) {
         if ( Date.now() - lastPopTime > 300 ) {
@@ -268,6 +272,15 @@ define( function( require ) {
       // Scroll the scene with the player as the player moves to the right
       if ( this.playerNode.position.x > DEFAULT_LAYOUT_BOUNDS.centerX && this.playerNode.position.x < 2300 ) {
         this.scene.setTranslation( DEFAULT_LAYOUT_BOUNDS.centerX - this.playerNode.position.x, 0 );
+      }
+
+      //let the blocks hit the player
+      for ( var i = 0; i < enemies.length; i++ ) {
+        var enemy = enemies[ i ];
+        if ( enemy.bounds.intersectsBounds( this.playerNode.bounds ) ) {
+          SMASH.play();
+          bumpTime = Date.now();
+        }
       }
     }
   } );

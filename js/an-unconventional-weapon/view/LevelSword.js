@@ -26,10 +26,12 @@ define( function( require ) {
 
   var smashSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/smash' );
   var crinkleSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/crinkle' );
+  var wootSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/woot' );
 
   // constants
   var SMASH = new Sound( smashSound );
   var CRINKLE = new Sound( crinkleSound );
+  var WOOT = new Sound( wootSound );
 
   var playedCrinkle = false;
   var inited = false;
@@ -203,6 +205,9 @@ define( function( require ) {
 
       if ( Input.pressedKeys[ Input.KEY_UP_ARROW ] && this.playerNode.onGround ) {
         this.playerNode.velocity.y = -1000;
+        if ( this.playerNode.onGround ) {
+          WOOT.play();
+        }
         this.playerNode.onGround = false;
       }
 
@@ -312,6 +317,7 @@ define( function( require ) {
         if ( this.playerNode.position.x === 2310 ) {
           barrierExists = false;
           this.scene.removeChild( this.barrier );
+          SMASH.play();
         }
       }
     },

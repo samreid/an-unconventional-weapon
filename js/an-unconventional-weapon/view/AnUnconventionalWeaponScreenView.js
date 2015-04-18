@@ -12,6 +12,7 @@ define( function( require ) {
   var ScreenView = require( 'JOIST/ScreenView' );
   var ResetAllButton = require( 'SCENERY_PHET/buttons/ResetAllButton' );
   var PlayerNode = require( 'AN_UNCONVENTIONAL_WEAPON/an-unconventional-weapon/view/PlayerNode' );
+  var PhysicalText = require( 'AN_UNCONVENTIONAL_WEAPON/an-unconventional-weapon/view/PhysicalText' );
   var Node = require( 'SCENERY/nodes/Node' );
   var Text = require( 'SCENERY/nodes/Text' );
   var Bounds2 = require( 'DOT/Bounds2' );
@@ -20,9 +21,13 @@ define( function( require ) {
   var Rectangle = require( 'SCENERY/nodes/Rectangle' );
   var Vector2 = require( 'DOT/Vector2' );
   var Util = require( 'DOT/Util' );
+  var DownUpListener = require( 'SCENERY/input/DownUpListener' );
 
   var inited = false;
   var gravity = new Vector2( 0, 9.8 * 200 );
+  var swordReady = false;
+  var swingingSword = false;
+  var swordAngle = Math.PI / 4;
 
   /**
    * @param {AnUnconventionalWeaponModel} anUnconventionalWeaponModel
@@ -71,7 +76,7 @@ define( function( require ) {
     } );
     this.scene.addChild( this.but );
 
-    this.words = new Text( 'words', {
+    this.words = new PhysicalText( 'words', {
       fontSize: 60,
       left: this.but.right + 20,
       bottom: this.but.bottom,
@@ -87,9 +92,75 @@ define( function( require ) {
     } );
     this.scene.addChild( this.willNeverHurtMe );
 
-    this.ground = new Rectangle( 0, 0, 10000, 50, { fill: 'yellow', bottom: DEFAULT_LAYOUT_BOUNDS.bottom } );
+    this.ground = new Rectangle( 0, 0, 10000, 50 + 500, {
+      fill: 'yellow',
+      bottom: DEFAULT_LAYOUT_BOUNDS.bottom + 500
+    } );
     this.scene.addChild( this.ground );
     this.scene.addChild( this.playerNode );
+
+    //this.addInputListener( {
+    //  // mousedown or touchstart (pointer pressed down over the node)
+    //  down: function( event ) {
+    //    if ( !event.pointer.isMouse ) {
+    //      count++;
+    //      updatePointers();
+    //    }
+    //  },
+    //
+    //  // mouseup or touchend (pointer lifted from over the node)
+    //  up: function( event ) {
+    //    if ( !event.pointer.isMouse ) {
+    //      count--;
+    //      updatePointers();
+    //    }
+    //  },
+    //
+    //  // triggered from mousemove or touchmove (pointer moved over the node from outside)
+    //  enter: function( event ) {
+    //    count++;
+    //    updatePointers();
+    //  },
+    //
+    //  // triggered from mousemove or touchmove (pointer moved outside the node from inside)
+    //  exit: function( event ) {
+    //    count--;
+    //    updatePointers();
+    //  },
+    //
+    //  // platform-specific trigger.
+    //  // on iPad Safari, cancel can by triggered by putting 4 pointers down and then dragging with all 4
+    //  cancel: function( event ) {
+    //    count--;
+    //    updatePointers();
+    //  },
+    //
+    //  // mousemove (fired AFTER enter/exit events if applicable)
+    //  move: function( event ) {
+    //    // do nothing
+    //  }
+    //} );
+    // Touch controls
+    //var moveLeftButton = new Rectangle( 0, 0, 100, DEFAULT_LAYOUT_BOUNDS.height, { fill: 'green', opacity: 0.2 } );
+    //moveLeftButton.addInputListener( new DownUpListener( {
+    //  down: function() {
+    //    Input.pressedKeys[ Input.KEY_LEFT_ARROW ] = true;
+    //  }, up: function() {
+    //    Input.pressedKeys[ Input.KEY_LEFT_ARROW ] = undefined;
+    //  }
+    //} ) );
+    //this.addChild( moveLeftButton );
+    //
+    //// Touch controls
+    //var moveRightButton = new Rectangle( 100, 0, 100, DEFAULT_LAYOUT_BOUNDS.height, { fill: 'green', opacity: 0.2 } );
+    //moveRightButton.addInputListener( new DownUpListener( {
+    //  down: function() {
+    //    Input.pressedKeys[ Input.KEY_RIGHT_ARROW ] = true;
+    //  }, up: function() {
+    //    Input.pressedKeys[ Input.KEY_RIGHT_ARROW ] = undefined;
+    //  }
+    //} ) );
+    //this.addChild( moveRightButton );
   }
 
   return inherit( ScreenView, AnUnconventionalWeaponScreenView, {
@@ -111,6 +182,10 @@ define( function( require ) {
         this.playerNode.velocity.x = this.playerNode.velocity.x * 0.9;// exponential decay for stopping.
       }
 
+      if ( Input.pressedKeys[ Input.KEY_SPACE ] && swordReady ) {
+        swingingSword = true;
+      }
+
       if ( Input.pressedKeys[ Input.KEY_UP_ARROW ] && this.playerNode.onGround ) {
         this.playerNode.velocity.y = -1000;
         this.playerNode.onGround = false;
@@ -124,10 +199,27 @@ define( function( require ) {
         this.playerNode.onGround = true;
       }
 
-      if ( this.words.falling ) {
-        this.words.translate( 0, 5 );
+      if ( this.words.falling && !this.words.doneFalling ) {
+        this.words.velocity = this.words.velocity.plus( gravity.timesScalar( dt ) );
+        this.words.position = this.words.position.plus( this.words.velocity.timesScalar( dt ) );
+        this.words.setTranslation( this.words.position );
         if ( this.words.bottom > this.ground.top + 16 ) {
           this.words.bottom = this.ground.top + 16;
+          this.words.falling = false;
+          this.words.doneFalling = true;
+
+          this.scene.removeChild( this.words );
+          var letters = [ 'w', 'o', 'r', 'd', 's' ];
+          this.letterNodes = [];
+          for ( var i = 0; i < letters.length; i++ ) {
+            var letter = letters[ i ];
+            this.letterNodes[ i ] = new PhysicalText( letter, {
+              fontSize: this.words.fontSize,
+              x: this.words.getTranslation().x + i * 30,
+              y: this.words.getTranslation().y
+            } );
+            this.scene.addChild( this.letterNodes[ i ] );
+          }
         }
       }
 
@@ -149,8 +241,17 @@ define( function( require ) {
       this.words.opacity = Util.clamp( Util.linear( 600, 800, 0, 1, this.playerNode.position.x ), 0, 1 );
       this.willNeverHurtMe.opacity = Util.clamp( Util.linear( 600, 800, 0, 1, this.playerNode.position.x ), 0, 1 );
 
-      if ( this.playerNode.centerX > this.words.centerX ) {
+      if ( this.playerNode.centerX > this.words.centerX + 20 ) {
         this.words.falling = true;
+      }
+
+      if ( this.letterNodes && this.playerNode.centerX < this.letterNodes[ 2 ].centerX ) {
+        //animate the letters
+        for ( var i = 0; i < this.letterNodes.length - 1; i++ ) {
+          this.updateLetterNode( this.letterNodes[ i ], i, dt, swordAngle );
+        }
+
+        this.updateLetterNode( this.letterNodes[ this.letterNodes.length - 1 ], -1, dt, swordAngle );
       }
       // Scroll with the player as the player moves to the right
       //if ( this.playerNode.position.y < DEFAULT_LAYOUT_BOUNDS.centerY ) {
@@ -158,6 +259,32 @@ define( function( require ) {
       //}
 
       // If the player is getting out of the bounds of the scene, translate the scene itself.
+
+      if ( swingingSword ) {
+        swordAngle = swordAngle - Math.PI / 32;
+        //animate the letters
+        for ( var i = 0; i < this.letterNodes.length - 1; i++ ) {
+          this.updateLetterNode( this.letterNodes[ i ], i, dt, swordAngle );
+        }
+
+        this.updateLetterNode( this.letterNodes[ this.letterNodes.length - 1 ], -1, dt, swordAngle );
+      }
+    },
+    updateLetterNode: function( letterNode, i, dt, angle ) {
+
+      var targetX = this.playerNode.position.x + (i + 3) * 30 * Math.cos( angle );
+      var targetY = this.playerNode.position.y - (i + 3) * 30 * Math.sin( angle );
+      var delta = new Vector2( targetX - letterNode.position.x, targetY - letterNode.position.y );
+      if ( delta.magnitude() > 50 ) {
+        letterNode.velocity = delta.normalized().times( 400 );
+        letterNode.position = letterNode.position.plus( letterNode.velocity.timesScalar( dt ) );
+      }
+      else {
+        letterNode.position.x = targetX;
+        letterNode.position.y = targetY;
+        swordReady = true;
+      }
+      letterNode.setTranslation( letterNode.position );
     }
   } );
 } );

@@ -71,8 +71,8 @@ define( function( require ) {
     this.scene.addChild( this.ground );
     this.scene.addChild( this.playerNode );
 
-    this.barrier = new Rectangle( 0, 0, 2000, 2000, { bottom: this.ground.top, x: 2500, fill: 'red' } );
-    this.scene.addChild( this.barrier );
+    //this.barrier = new Rectangle( 0, 0, 2000, 2000, { bottom: this.ground.top, x: 2500, fill: 'red' } );
+    //this.scene.addChild( this.barrier );
 
     for ( var i = 0; i < 1; i++ ) {
       this.addLetter();
@@ -89,6 +89,10 @@ define( function( require ) {
       } );
       this.scene.addChild( enemy );
       enemies.push( enemy );
+      if ( i === 5 ) {
+        enemy.stationary = true;
+        enemy.left = 2500;
+      }
     }
   }
 
@@ -171,7 +175,9 @@ define( function( require ) {
       var enemiesToRemove = [];
       for ( var i = 0; i < enemies.length; i++ ) {
         var enemy = enemies[ i ];
-        enemy.translate( -2 - Math.random(), 0 );
+        if ( !enemy.stationary ) {
+          enemy.translate( -1 - Math.random(), 0 );
+        }
         for ( var k = 0; k < bullets.length; k++ ) {
           var bullet = bullets[ k ];
           if ( bullet.bounds.intersectsBounds( enemy.bounds ) ) {

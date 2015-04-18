@@ -20,6 +20,7 @@ define( function( require ) {
   var Input = require( 'SCENERY/input/Input' );
   var Rectangle = require( 'SCENERY/nodes/Rectangle' );
   var Vector2 = require( 'DOT/Vector2' );
+  var Matrix3 = require( 'DOT/Matrix3' );
   var Util = require( 'DOT/Util' );
   var DownUpListener = require( 'SCENERY/input/DownUpListener' );
   var Sound = require( 'VIBE/Sound' );
@@ -35,6 +36,7 @@ define( function( require ) {
 
   var gravity = new Vector2( 0, 9.8 * 200 );
 
+  var sawReady = false;
   var inited = false;
 
   /**
@@ -66,20 +68,28 @@ define( function( require ) {
     var letters = 'was it a rat i saw';
     for ( var i = 0; i < letters.length; i++ ) {
       var letter = letters[ i ];
+      var delta = 48;
       var letterNode = new PhysicalText( letter, {
-        fontSize: 48,
+        fontSize: 64,
         fontFamily: 'Lucida Console',
-        x: i * 32,
+        x: i * delta,
         y: 0
       } );
       var c = letterNode.centerX;
       letterNode.scale( -1, 1 );
+      letterNode.sx = -1;
       letterNode.centerX = c;
       sentence.addChild( letterNode );
     }
     sentence.scale( -1, 1 );
     sentence.centerX = DEFAULT_LAYOUT_BOUNDS.centerX;
     sentence.centerY = DEFAULT_LAYOUT_BOUNDS.centerY;
+    sentence.getChildAt( 11 ).translate( -delta, 0 );
+    sentence.getChildAt( 11 ).delta = delta;
+    sentence.getChildAt( 9 ).translate( delta, 0 );
+    sentence.getChildAt( 9 ).delta = delta;
+    sentence.getChildAt( 5 ).translate( -delta, 0 );
+    sentence.getChildAt( 5 ).delta = -delta;
 
     this.sentence = sentence;
   }
@@ -103,7 +113,7 @@ define( function( require ) {
         this.playerNode.velocity.x = this.playerNode.velocity.x * 0.9;// exponential decay for stopping.
       }
 
-      if ( Input.pressedKeys[ Input.KEY_SPACE ] && swordReady ) {
+      if ( Input.pressedKeys[ Input.KEY_SPACE ] && sawReady ) {
         //swingingSword = true;
       }
 
@@ -122,7 +132,32 @@ define( function( require ) {
         this.playerNode.velocity.y = Math.abs( this.playerNode.velocity.y );
         this.playerNode.top = this.sentence.bottom + 10;
         SMASH.play();
-        
+        for ( var i = 0; i < this.sentence.getChildrenCount(); i++ ) {
+          var letter = this.sentence.getChildAt( i );
+          if ( !letter.bonked && letter.text !== ' ' && letter.text !== 'w' ) {
+            var x = letter.centerX;
+            letter.scale( -1, 1 );
+            letter.centerX = x;
+            letter.bonked = true;
+            letter.rotating = true;
+            break;
+          }
+        }
+      }
+
+      for ( var i = 0; i < this.sentence.getChildrenCount(); i++ ) {
+        var letter = this.sentence.getChildAt( i );
+        if ( letter.rotating ) {
+          var center = letter.center;
+          letter.sx += 0.02;
+          if ( letter.sx > 1 ) {
+            letter.x = 1;
+            letter.rotating = false;
+            letter.finishedRotating = true;
+          }
+          letter.setMatrix( Matrix3.scaling( letter.sx, 1 ) );
+          letter.center = center;
+        }
       }
 
       this.playerNode.position = this.playerNode.position.plus( this.playerNode.velocity.timesScalar( dt ) );

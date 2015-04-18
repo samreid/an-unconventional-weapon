@@ -29,6 +29,8 @@ define( function( require ) {
   var swingingSword = false;
   var swordAngle = Math.PI / 4;
 
+  var barrierExists = true;
+
   /**
    * @param {AnUnconventionalWeaponModel} anUnconventionalWeaponModel
    * @constructor
@@ -98,6 +100,9 @@ define( function( require ) {
     } );
     this.scene.addChild( this.ground );
     this.scene.addChild( this.playerNode );
+
+    this.barrier = new Rectangle( 0, 0, 2000, 2000, { bottom: this.ground.top, x: 2500, fill: 'red' } );
+    this.scene.addChild( this.barrier );
 
     //this.addInputListener( {
     //  // mousedown or touchstart (pointer pressed down over the node)
@@ -226,10 +231,22 @@ define( function( require ) {
       if ( this.playerNode.position.x < 0 ) {
         this.playerNode.position.x = 0;
       }
+      if ( this.playerNode.position.x > 2310 && barrierExists ) {
+        this.playerNode.position.x = 2310;
+      }
+      if ( this.playerNode.position.x > 2900 ) {
+        //new Level
+        //linear: function( a1, a2, b1, b2, a3 ) {
+        //this.ludumDareEntry.opacity = Util.clamp( Util.linear( 20, 200, 1, 0, this.playerNode.position.x ), 0, 1 );
+        this.scene.opacity = Util.clamp( Util.linear( 2900, 3000, 1, 0, this.playerNode.position.x ), 0, 1 );
+        if ( this.playerNode.position.x > 3000 ) {
+          this.removeChild( this.scene );
+        }
+      }
       this.playerNode.setTranslation( this.playerNode.position );
 
-      // Scroll with the player as the player moves to the right
-      if ( this.playerNode.position.x > DEFAULT_LAYOUT_BOUNDS.centerX ) {
+      // Scroll the scene with the player as the player moves to the right
+      if ( this.playerNode.position.x > DEFAULT_LAYOUT_BOUNDS.centerX && this.playerNode.position.x < 2300 ) {
         this.scene.setTranslation( DEFAULT_LAYOUT_BOUNDS.centerX - this.playerNode.position.x, 0 );
       }
 
@@ -261,21 +278,30 @@ define( function( require ) {
       // If the player is getting out of the bounds of the scene, translate the scene itself.
 
       if ( swingingSword ) {
-        swordAngle = swordAngle - Math.PI / 32;
+        swordAngle = swordAngle - Math.PI / 32 * 1.5;
+        if ( swordAngle < 0 ) {
+          swordAngle = Math.PI / 4;
+          swingingSword = false;
+          swordReady = false;
+        }
         //animate the letters
         for ( var i = 0; i < this.letterNodes.length - 1; i++ ) {
           this.updateLetterNode( this.letterNodes[ i ], i, dt, swordAngle );
         }
 
         this.updateLetterNode( this.letterNodes[ this.letterNodes.length - 1 ], -1, dt, swordAngle );
+        if ( this.playerNode.position.x === 2310 ) {
+          barrierExists = false;
+          this.scene.removeChild( this.barrier );
+        }
       }
     },
     updateLetterNode: function( letterNode, i, dt, angle ) {
 
-      var targetX = this.playerNode.position.x + (i + 3) * 30 * Math.cos( angle );
-      var targetY = this.playerNode.position.y - (i + 3) * 30 * Math.sin( angle );
+      var targetX = this.playerNode.position.x + (i + 3) * 37 * Math.cos( angle );
+      var targetY = this.playerNode.position.y - (i + 3) * 37 * Math.sin( angle );
       var delta = new Vector2( targetX - letterNode.position.x, targetY - letterNode.position.y );
-      if ( delta.magnitude() > 50 ) {
+      if ( delta.magnitude() > 30 ) {
         letterNode.velocity = delta.normalized().times( 400 );
         letterNode.position = letterNode.position.plus( letterNode.velocity.timesScalar( dt ) );
       }

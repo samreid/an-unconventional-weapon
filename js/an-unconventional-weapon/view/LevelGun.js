@@ -106,10 +106,10 @@ define( function( require ) {
         if ( fallingLetter.position.y > DEFAULT_LAYOUT_BOUNDS.bottom - 50 ) {
           fallingLetter.position.y = DEFAULT_LAYOUT_BOUNDS.bottom - 50;
 
-          //if ( !this.playerNode.onGround ) {
-          //  SMASH.play();
-          //}
-          //this.playerNode.onGround = true;
+          if ( !fallingLetter.onGround ) {
+            SMASH.play();
+          }
+          fallingLetter.onGround = true;
         }
         fallingLetter.setTranslation( fallingLetter.position.x, fallingLetter.position.y );
 

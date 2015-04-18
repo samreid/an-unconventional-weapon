@@ -22,7 +22,16 @@ define( function( require ) {
   var Vector2 = require( 'DOT/Vector2' );
   var Util = require( 'DOT/Util' );
   var DownUpListener = require( 'SCENERY/input/DownUpListener' );
+  var Sound = require( 'VIBE/Sound' );
 
+  var smashSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/smash' );
+  var crinkleSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/crinkle' );
+
+  // constants
+  var SMASH = new Sound( smashSound );
+  var CRINKLE = new Sound( crinkleSound );
+
+  var playedCrinkle = false;
   var inited = false;
   var gravity = new Vector2( 0, 9.8 * 200 );
   var swordReady = false;
@@ -202,6 +211,10 @@ define( function( require ) {
       this.playerNode.position = this.playerNode.position.plus( this.playerNode.velocity.timesScalar( dt ) );
       if ( this.playerNode.position.y > DEFAULT_LAYOUT_BOUNDS.bottom - 50 ) {
         this.playerNode.position.y = DEFAULT_LAYOUT_BOUNDS.bottom - 50;
+
+        if ( !this.playerNode.onGround ) {
+          SMASH.play();
+        }
         this.playerNode.onGround = true;
       }
 
@@ -213,6 +226,7 @@ define( function( require ) {
           this.words.bottom = this.ground.top + 16;
           this.words.falling = false;
           this.words.doneFalling = true;
+          SMASH.play();
 
           this.scene.removeChild( this.words );
           var letters = [ 'w', 'o', 'r', 'd', 's' ];
@@ -261,6 +275,10 @@ define( function( require ) {
 
       if ( this.playerNode.centerX > this.words.centerX + 20 ) {
         this.words.falling = true;
+        if ( !playedCrinkle ) {
+          CRINKLE.play();
+          playedCrinkle = true;
+        }
       }
 
       if ( this.letterNodes && this.playerNode.centerX < this.letterNodes[ 2 ].centerX ) {

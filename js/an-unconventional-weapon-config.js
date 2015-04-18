@@ -22,6 +22,7 @@ require.config( {
     // PhET plugins
     image: '../../chipper/js/requirejs-plugins/image',
     string: '../../chipper/js/requirejs-plugins/string',
+    audio: '../../chipper/js/requirejs-plugins/audio',
 
     // common directories, uppercase names to identify them in require imports
     AXON: '../../axon/js',
@@ -34,6 +35,8 @@ require.config( {
     SCENERY: '../../scenery/js',
     SCENERY_PHET: '../../scenery-phet/js',
     SUN: '../../sun/js',
+    VIBE: '../../vibe/js',
+    SHERPA: '../../sherpa',
 
     // this sim
     AN_UNCONVENTIONAL_WEAPON: '.'

@@ -1,0 +1,28 @@
+{
+	"en": {
+		"AN_UNCONVENTIONAL_WEAPON/an-unconventional-weapon.name": "An Unconventional Weapon",
+		"JOIST/credits.title": "Credits",
+		"JOIST/credits.leadDesign": "Lead Design: {0}",
+		"JOIST/credits.softwareDevelopment": "Software Development: {0}",
+		"JOIST/credits.team": "Team: {0}",
+		"JOIST/credits.qualityAssurance": "Quality Assurance: {0}",
+		"JOIST/credits.graphicArts": "Graphic Arts: {0}",
+		"JOIST/credits.translation": "Translation",
+		"JOIST/credits.thanks": "Thanks",
+		"JOIST/versionPattern": "version {0}",
+		"JOIST/options.title": "Options",
+		"JOIST/showPointers": "Show Pointers",
+		"JOIST/done": "Done",
+		"JOIST/title.settings": "Settings",
+		"JOIST/menuItem.options": "Options...",
+		"JOIST/menuItem.about": "About...",
+		"JOIST/menuItem.mailInputEventsLog": "Mail Input Events Log",
+		"JOIST/menuItem.outputInputEventsLog": "Output Input Events Log",
+		"JOIST/menuItem.phetWebsite": "PhET website...",
+		"JOIST/menuItem.reportAProblem": "Report a Problem...",
+		"JOIST/menuItem.screenshot": "Screenshot",
+		"JOIST/menuItem.fullscreen": "Full Screen",
+		"JOIST/menuItem.settings": "Settings...",
+		"JOIST/menuItem.submitInputEventsLog": "Submit Input Events Log"
+	}
+}

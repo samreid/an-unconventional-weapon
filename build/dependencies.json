@@ -1,7 +1,7 @@
 {
-  "comment": "# an-unconventional-weapon 1.0.0-dev.1 Sat Apr 18 2015 11:49:50 GMT-0600 (MDT)",
+  "comment": "# an-unconventional-weapon 1.0.0-dev.1 Sat Apr 18 2015 11:54:27 GMT-0600 (MDT)",
   "an-unconventional-weapon": {
-    "sha": "823cd9b72ba59067e82ad52afa400ebb7ab0ffda",
+    "sha": "c0d68c325607e89d8c42f7cbcb89998ef34c3146",
     "branch": "gh-pages"
   },
   "assert": {

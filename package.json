@@ -1,0 +1,42 @@
+{
+  "name": "an-unconventional-weapon",
+  "version": "1.0.0-dev.1",
+  "license": "Copyright Sam Reid, 2015",
+  "simTitleStringKey": "AN_UNCONVENTIONAL_WEAPON/an-unconventional-weapon.name",
+  "phetLibs": [
+    "an-unconventional-weapon",
+    "assert",
+    "axon",
+    "brand",
+    "chipper",
+    "dot",
+    "joist",
+    "kite",
+    "phet-core",
+    "phetcommon",
+    "scenery",
+    "scenery-phet",
+    "sherpa",
+    "sun"
+  ],
+  "preload": [
+    "../assert/js/assert.js",
+    "../sherpa/jquery-2.1.0.js",
+    "../sherpa/lodash-2.4.1.js",
+    "../sherpa/has.js",
+    "../sherpa/FileSaver.js",
+    "../chipper/js/initialize-globals.js",
+    "../phetcommon/js/analytics/google-analytics.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phetsims/an-unconventional-weapon.git"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-requirejs": "~0.4.0",
+    "grunt-contrib-jshint": "~0.6.4",
+    "uglify-js": "~2.4.0",
+    "requirejs": "~2.1.8"
+  }
+}

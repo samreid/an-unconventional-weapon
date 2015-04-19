@@ -111,14 +111,18 @@ define( function( require ) {
       centerBottom: gradient.centerTop.plusXY( 0, 2 )
     } );
     this.scene.addChild( space );
+
+    var stars = [];
     for ( var i = 0; i < 100; i++ ) {
       var star = new StarNode( {
         x: Math.random() * (space.width) + space.left,
-        y: Math.random() * (space.height) + space.top,
+        y: Math.random() * (space.height + 500) + space.top,
         filledStroke: null
       } );
-      this.scene.addChild( star );
+      stars.push( star );
     }
+    var starLayer = new Node( { children: stars } );
+    this.scene.addChild( starLayer );
 
     this.scene.addChild( this.playerNode );
   }

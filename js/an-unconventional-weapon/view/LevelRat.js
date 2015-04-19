@@ -28,11 +28,14 @@ define( function( require ) {
   var smashSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/smash' );
   var crinkleSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/crinkle' );
   var wootSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/woot' );
+  var sawSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/saw' );
+
 
   // constants
   var SMASH = new Sound( smashSound );
   var CRINKLE = new Sound( crinkleSound );
   var WOOT = new Sound( wootSound );
+  var SAW = new Sound( sawSound );
 
   var gravity = new Vector2( 0, 9.8 * 200 );
   var firstSmash = true;
@@ -42,8 +45,12 @@ define( function( require ) {
   var inited = false;
   var growthSteps = 0;
   var ratComplete = false;
+  var playedSawSound = false;
 
   var lastTimeHitRat = Date.now();
+  var grabbedSaw = false;
+  var sawTime = 0;
+  var sawing = false;
 
   /**
    * @param {AnUnconventionalWeaponModel} anUnconventionalWeaponModel
@@ -262,16 +269,66 @@ define( function( require ) {
         lettersTranslating = false;
       }
 
+      var s = this.sentence.getChildAt( 15 );
+      var a2 = this.sentence.getChildAt( 16 );
+      var w = this.sentence.getChildAt( 17 );
       if ( ratComplete ) {
+
+        // Jump with player
         r.bottom = this.playerNode.bottom - this.sentence.y + 30;
         a.bottom = this.playerNode.bottom - this.sentence.y + 30;
         t.bottom = this.playerNode.bottom - this.sentence.y + 30;
 
-        if ( this.playerNode.globalBounds.right > r.globalBounds.left ) {
+        // Bump player back
+        if ( this.playerNode.globalBounds.right > r.globalBounds.left && !sawing ) {
           this.playerNode.velocity.x = -800;
           lastTimeHitRat = Date.now();
           SMASH.play();
         }
+
+        if ( s.globalBounds.intersectsBounds( this.playerNode.globalBounds ) ||
+             a2.globalBounds.intersectsBounds( this.playerNode.globalBounds ) ||
+             w.globalBounds.intersectsBounds( this.playerNode.globalBounds ) ) {
+          grabbedSaw = true;
+        }
+      }
+
+      if ( grabbedSaw && !playedSawSound && !sawing ) {
+        s.leftBottom = this.playerNode.rightBottom.plusXY( 0 - this.sentence.x, -this.sentence.y );
+        a2.leftBottom = this.playerNode.rightBottom.plusXY( 40 - this.sentence.x, -this.sentence.y );
+        w.leftBottom = this.playerNode.rightBottom.plusXY( 80 - this.sentence.x, -this.sentence.y );
+      }
+
+      if ( w.bounds.intersectsBounds( a.bounds ) && !sawing ) {
+        if ( !playedSawSound ) {
+          SAW.play();
+          playedSawSound = true;
+          sawTime = Date.now();
+          sawing = true;
+
+          var rCenter = r.center;
+          var aCenter = a.center;
+          var tCenter = t.center;
+
+          r.setMatrix( Matrix3.scaling( 2, -2 ) );
+          a.setMatrix( Matrix3.scaling( 2, -2 ) );
+          t.setMatrix( Matrix3.scaling( 2, -2 ) );
+          r.center = rCenter;
+          a.center = aCenter;
+          t.center = tCenter;
+        }
+      }
+
+      if ( sawing && (Date.now() - sawTime < 1000 ) ) {
+        s.leftBottom = this.playerNode.rightBottom.plusXY( 0 - this.sentence.x + 50 * Math.sin( (Date.now() - sawTime) / 1000 * 6 ), -this.sentence.y );
+        a2.leftBottom = this.playerNode.rightBottom.plusXY( 40 - this.sentence.x + 50 * Math.sin( (Date.now() - sawTime) / 1000 * 6 ), -this.sentence.y );
+        w.leftBottom = this.playerNode.rightBottom.plusXY( 80 - this.sentence.x + 50 * Math.sin( (Date.now() - sawTime ) / 1000 * 6 ), -this.sentence.y );
+      }
+
+      if ( sawing ) {
+        r.translate( 0, 10 );
+        a.translate( 0, 10 );
+        t.translate( 0, 10 );
       }
 
       this.playerNode.position = this.playerNode.position.plus( this.playerNode.velocity.timesScalar( dt ) );

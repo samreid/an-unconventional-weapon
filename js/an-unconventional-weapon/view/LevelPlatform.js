@@ -100,12 +100,13 @@ define( function( require ) {
         bottom: previousPlatform( 0 ).top - 800
       } ) );
     }
-    var gradient = new Rectangle( 0, 0, 5000, 1000, {
-      bottom: previousPlatform().top,
-      fill: new LinearGradient( 0, 0, 0, 1000 ).addColorStop( 0, 'black' ).addColorStop( 1, 'white' )
+    var gradient = new Rectangle( 0, 0, 8000, 1000 + 2000, {
+      bottom: previousPlatform().top + 2000,
+      fill: new LinearGradient( 0, 0, 0, 3000 ).addColorStop( 0, 'black' ).addColorStop( 1, 'white' )
     } );
     this.scene.addChild( gradient );
-    var space = new Rectangle( 0, 0, 5000, 1000, {
+    gradient.moveToBack();
+    var space = new Rectangle( 0, 0, 8000, 1000, {
       fill: 'black',
       centerBottom: gradient.centerTop.plusXY( 0, 2 )
     } );

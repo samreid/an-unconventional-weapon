@@ -23,6 +23,7 @@ define( function( require ) {
   var Util = require( 'DOT/Util' );
   var DownUpListener = require( 'SCENERY/input/DownUpListener' );
   var Sound = require( 'VIBE/Sound' );
+  var MultiLineText = require( 'SCENERY_PHET/MultiLineText' );
 
   var smashSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/smash' );
   var crinkleSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/crinkle' );
@@ -74,6 +75,15 @@ define( function( require ) {
     } );
     this.scene.addChild( this.bySamReid );
 
+    this.instructions = new MultiLineText( 'Arrow Keys + Space Bar\nor\nTap Each Corner (Touch)', {
+      align: 'left',
+      fill: 'black',
+      left: this.sticksAndStones.left,
+      bottom: this.bySamReid.bottom + 330,
+      fontSize: 30
+    } );
+    this.scene.addChild( this.instructions );
+
     this.mayBreakMyBones = new Text( 'may break my bones', {
       fontSize: 60,
       left: this.sticksAndStones.right + 20,
@@ -115,69 +125,6 @@ define( function( require ) {
 
     this.barrier = new Rectangle( 0, 0, 2000, 2000, { bottom: this.ground.top, x: 2500, fill: 'red' } );
     this.scene.addChild( this.barrier );
-
-    //this.addInputListener( {
-    //  // mousedown or touchstart (pointer pressed down over the node)
-    //  down: function( event ) {
-    //    if ( !event.pointer.isMouse ) {
-    //      count++;
-    //      updatePointers();
-    //    }
-    //  },
-    //
-    //  // mouseup or touchend (pointer lifted from over the node)
-    //  up: function( event ) {
-    //    if ( !event.pointer.isMouse ) {
-    //      count--;
-    //      updatePointers();
-    //    }
-    //  },
-    //
-    //  // triggered from mousemove or touchmove (pointer moved over the node from outside)
-    //  enter: function( event ) {
-    //    count++;
-    //    updatePointers();
-    //  },
-    //
-    //  // triggered from mousemove or touchmove (pointer moved outside the node from inside)
-    //  exit: function( event ) {
-    //    count--;
-    //    updatePointers();
-    //  },
-    //
-    //  // platform-specific trigger.
-    //  // on iPad Safari, cancel can by triggered by putting 4 pointers down and then dragging with all 4
-    //  cancel: function( event ) {
-    //    count--;
-    //    updatePointers();
-    //  },
-    //
-    //  // mousemove (fired AFTER enter/exit events if applicable)
-    //  move: function( event ) {
-    //    // do nothing
-    //  }
-    //} );
-    // Touch controls
-    //var moveLeftButton = new Rectangle( 0, 0, 100, DEFAULT_LAYOUT_BOUNDS.height, { fill: 'green', opacity: 0.2 } );
-    //moveLeftButton.addInputListener( new DownUpListener( {
-    //  down: function() {
-    //    Input.pressedKeys[ Input.KEY_LEFT_ARROW ] = true;
-    //  }, up: function() {
-    //    Input.pressedKeys[ Input.KEY_LEFT_ARROW ] = undefined;
-    //  }
-    //} ) );
-    //this.addChild( moveLeftButton );
-    //
-    //// Touch controls
-    //var moveRightButton = new Rectangle( 100, 0, 100, DEFAULT_LAYOUT_BOUNDS.height, { fill: 'green', opacity: 0.2 } );
-    //moveRightButton.addInputListener( new DownUpListener( {
-    //  down: function() {
-    //    Input.pressedKeys[ Input.KEY_RIGHT_ARROW ] = true;
-    //  }, up: function() {
-    //    Input.pressedKeys[ Input.KEY_RIGHT_ARROW ] = undefined;
-    //  }
-    //} ) );
-    //this.addChild( moveRightButton );
   }
 
   return inherit( ScreenView, AnUnconventionalWeaponScreenView, {
@@ -271,8 +218,9 @@ define( function( require ) {
       }
 
       //linear: function( a1, a2, b1, b2, a3 ) {
-      this.ludumDareEntry.opacity = Util.clamp( Util.linear( 20, 200, 1, 0, this.playerNode.position.x ), 0, 1 );
-      this.bySamReid.opacity = Util.clamp( Util.linear( 20, 200, 1, 0, this.playerNode.position.x ), 0, 1 );
+      this.ludumDareEntry.opacity = Util.clamp( Util.linear( 100, 450, 1, 0, this.playerNode.position.x ), 0, 1 );
+      this.bySamReid.opacity = Util.clamp( Util.linear( 100, 450, 1, 0, this.playerNode.position.x ), 0, 1 );
+      this.instructions.opacity = Util.clamp( Util.linear( 100, 450, 1, 0, this.playerNode.position.x ), 0, 1 );
       this.mayBreakMyBones.opacity = Util.clamp( Util.linear( 600, 800, 0, 1, this.playerNode.position.x ), 0, 1 );
       this.but.opacity = Util.clamp( Util.linear( 600, 800, 0, 1, this.playerNode.position.x ), 0, 1 );
       this.words.opacity = Util.clamp( Util.linear( 600, 800, 0, 1, this.playerNode.position.x ), 0, 1 );

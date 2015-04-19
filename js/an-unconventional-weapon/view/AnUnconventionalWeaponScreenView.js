@@ -19,9 +19,6 @@ define( function( require ) {
   var Input = require( 'SCENERY/input/Input' );
 
   var levels = [ LevelSword, LevelGun, LevelRat, LevelPlatform, LevelEnd ];
-  //var levels = [ LevelPlatform, LevelSword, LevelGun, LevelRat ];
-  //var levels = [ LevelRat, LevelGun, LevelRat ];
-  //var levels = [ LevelEnd, LevelGun, LevelRat ];
   var levelIndex = 3;
 
   window.TouchPower = {

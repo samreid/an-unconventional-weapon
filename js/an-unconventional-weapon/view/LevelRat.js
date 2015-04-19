@@ -41,6 +41,9 @@ define( function( require ) {
   var sawReady = false;
   var inited = false;
   var growthSteps = 0;
+  var ratComplete = false;
+
+  var lastTimeHitRat = Date.now();
 
   /**
    * @param {AnUnconventionalWeaponModel} anUnconventionalWeaponModel
@@ -109,10 +112,10 @@ define( function( require ) {
         inited = true;
       }
 
-      if ( Input.pressedKeys[ Input.KEY_LEFT_ARROW ] ) {
+      if ( Input.pressedKeys[ Input.KEY_LEFT_ARROW ] && Date.now() - lastTimeHitRat > 500 ) {
         this.playerNode.velocity.x = -300;
       }
-      else if ( Input.pressedKeys[ Input.KEY_RIGHT_ARROW ] ) {
+      else if ( Input.pressedKeys[ Input.KEY_RIGHT_ARROW ] && Date.now() - lastTimeHitRat > 500 ) {
         this.playerNode.velocity.x = +300;
       }
       else {
@@ -216,9 +219,9 @@ define( function( require ) {
       //this.sentence.rotating = true;
       if ( this.sentence.doneRotating ) {
 
-        var rTarget = new Vector2( DEFAULT_LAYOUT_BOUNDS.width - this.sentence.x + 0, this.ground.top - this.sentence.y + 30 );
-        var aTarget = new Vector2( DEFAULT_LAYOUT_BOUNDS.width - this.sentence.x + 80, this.ground.top - this.sentence.y + 30 );
-        var tTarget = new Vector2( DEFAULT_LAYOUT_BOUNDS.width - this.sentence.x + 160, this.ground.top - this.sentence.y + 30 );
+        var rTarget = new Vector2( DEFAULT_LAYOUT_BOUNDS.width - this.sentence.x + 0 + 200, this.ground.top - this.sentence.y + 30 );
+        var aTarget = new Vector2( DEFAULT_LAYOUT_BOUNDS.width - this.sentence.x + 80 + 200, this.ground.top - this.sentence.y + 30 );
+        var tTarget = new Vector2( DEFAULT_LAYOUT_BOUNDS.width - this.sentence.x + 160 + 200, this.ground.top - this.sentence.y + 30 );
 
         var scale = 1.006;
 
@@ -249,12 +252,24 @@ define( function( require ) {
         if ( tDist.magnitude() < 2 ) {
           t.text = 'T';
           t.centerBottom = tTarget;
+          ratComplete = true;
         }
-
       }
 
       if ( Math.abs( vectorTowardTarget ) < 0.001 ) {
         lettersTranslating = false;
+      }
+
+      if ( ratComplete ) {
+        r.bottom = this.playerNode.bottom - this.sentence.y + 30;
+        a.bottom = this.playerNode.bottom - this.sentence.y + 30;
+        t.bottom = this.playerNode.bottom - this.sentence.y + 30;
+
+        if ( this.playerNode.globalBounds.right > r.globalBounds.left ) {
+          this.playerNode.velocity.x = -800;
+          lastTimeHitRat = Date.now();
+          SMASH.play();
+        }
       }
 
       this.playerNode.position = this.playerNode.position.plus( this.playerNode.velocity.timesScalar( dt ) );

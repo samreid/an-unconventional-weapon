@@ -87,12 +87,13 @@ define( function( require ) {
     sentence.centerX = DEFAULT_LAYOUT_BOUNDS.centerX;
     sentence.centerY = DEFAULT_LAYOUT_BOUNDS.centerY;
     sentence.getChildAt( 11 ).translate( -delta, 0 );
-    sentence.getChildAt( 11 ).delta = -delta;
+    sentence.getChildAt( 11 ).targetX = sentence.getChildAt( 11 ).centerX - delta;
     sentence.getChildAt( 9 ).translate( delta, 0 );
-    sentence.getChildAt( 9 ).delta = delta;
+    sentence.getChildAt( 9 ).targetX = sentence.getChildAt( 9 ).centerX + delta;
     sentence.getChildAt( 5 ).translate( -delta, 0 );
-    sentence.getChildAt( 5 ).delta = -delta;
+    sentence.getChildAt( 5 ).targetX = sentence.getChildAt( 5 ).centerX - delta;
 
+    sentence.sx = -1;
     this.sentence = sentence;
   }
 
@@ -140,21 +141,43 @@ define( function( require ) {
           lettersTranslating = true;
         }
         else {
-
+          var closest = null;
+          var closestDist = 100000;
           for ( var i = 0; i < this.sentence.getChildrenCount(); i++ ) {
             var letter = this.sentence.getChildAt( i );
-            if ( !letter.bonked && letter.text !== ' ' && letter.text !== 'w' ) {
-              var x = letter.centerX;
-              letter.scale( -1, 1 );
-              letter.centerX = x;
-              letter.bonked = true;
-              letter.rotating = true;
-              break;
+            var dist = letter.globalBounds.center.distance( this.playerNode.globalBounds.center );
+            if ( dist < closestDist && letter.text !== ' ' ) {
+              closestDist = dist;
+              closest = letter;
             }
           }
+          closest.bonked = true;
+          closest.rotating = true;
         }
       }
 
+      var count = 0;
+      for ( var i = 0; i < this.sentence.getChildrenCount(); i++ ) {
+        var letter = this.sentence.getChildAt( i );
+        if ( letter.bonked ) {
+          count++;
+        }
+      }
+      if ( count === 13 ) {
+        this.sentence.rotating = true;
+      }
+
+      if ( this.sentence.rotating && !this.sentence.doneRotating ) {
+        var center = this.sentence.center;
+        this.sentence.sx += 0.02;
+        if ( this.sentence.sx > 1 ) {
+          this.sentence.doneRotating = true;
+          this.sentence.sx = 1;
+          WOOT.play();
+        }
+        this.sentence.setMatrix( Matrix3.scaling( this.sentence.sx, 1 ) );
+        this.sentence.center = center;
+      }
       for ( var i = 0; i < this.sentence.getChildrenCount(); i++ ) {
         var letter = this.sentence.getChildAt( i );
         if ( letter.rotating ) {
@@ -169,14 +192,15 @@ define( function( require ) {
           letter.center = center;
         }
         if ( lettersTranslating ) {
-          if ( letter.delta ) {
+          if ( letter.targetX ) {
 
             // TODO: animate toward the target.
-            letter.translate( -letter.delta, 0 );
+            var vectorTowardTarget = letter.targetX - letter.centerX;
+            letter.centerX = (letter.centerX + vectorTowardTarget / 14);
           }
         }
       }
-      if ( lettersTranslating ) {
+      if ( Math.abs( vectorTowardTarget ) < 0.001 ) {
         lettersTranslating = false;
       }
 

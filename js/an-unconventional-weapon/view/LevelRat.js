@@ -152,13 +152,15 @@ define( function( require ) {
           for ( var i = 0; i < this.sentence.getChildrenCount(); i++ ) {
             var letter = this.sentence.getChildAt( i );
             var dist = letter.globalBounds.center.distance( this.playerNode.globalBounds.center );
-            if ( dist < closestDist && letter.text !== ' ' ) {
+            if ( dist < closestDist && letter.text !== ' ' && !letter.bonked ) {
               closestDist = dist;
               closest = letter;
             }
           }
-          closest.bonked = true;
-          closest.rotating = true;
+          if ( closest ) {
+            closest.bonked = true;
+            closest.rotating = true;
+          }
         }
       }
 

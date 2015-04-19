@@ -147,15 +147,18 @@ define( function( require ) {
 
     this.fallingSquares = new Node();
     for ( var i = 0; i < 100; i++ ) {
-      var fallingSquare = new Rectangle( 0, 0, 20, 20, {
-        x: 5000 + Math.random() * 1000,
-        y: -1000 + Math.random() * 500,
+      var dim = 50 + Math.random() * 50;
+      var fallingSquare = new Rectangle( 0, 0, dim, dim, {
+        x: Math.random() * 8000,
+        y: -8000 + Math.random() * 4000,
         fill: 'red',
         stroke: 'black',
         lineWidth: 2
       } );
+      fallingSquare.speed = Math.random() * 200 + 100;
       this.fallingSquares.addChild( fallingSquare );
     }
+    this.scene.addChild( this.fallingSquares );
 
     this.platforms.addChild( new Rectangle( blackPlatform.right, blackPlatform.top + 200, 500, 100, {
       fill: 'black',
@@ -183,8 +186,8 @@ define( function( require ) {
     newSpringBoots: function() {
       var springboots = new Node( {
         children: [
-          new Rectangle( -10, 0, 10, 15, { fill: 'red', stroke: 'black' } ),
-          new Rectangle( 5, 0, 10, 15, { fill: 'red', stroke: 'black' } )
+          new Rectangle( -10, 0, 10, 15, { fill: 'green', stroke: 'black' } ),
+          new Rectangle( 5, 0, 10, 15, { fill: 'green', stroke: 'black' } )
         ]
       } );
       return springboots;
@@ -266,10 +269,10 @@ define( function( require ) {
         if ( star.isCollected ) {
           collectedCount++;
           var center = star.center;
-          var target = this.playerNode.center.plus( Vector2.createPolar( 200, collectedCount * Math.PI / 7 + Date.now() / 1000 * Math.PI / 2 ) );
+          var target = this.playerNode.center.plus( Vector2.createPolar( 200 + collectedCount * 1.5, collectedCount * Math.PI / 8 + Date.now() / 1000 * Math.PI / 2 ) );
           star.rotate( Math.PI * dt );
           var delta = target.minus( center );
-          var dx = delta.timesScalar( 0.1 );
+          var dx = delta.timesScalar( 0.14 );
           var newPosition = center.plus( dx );
           star.center = newPosition;
         }
@@ -301,6 +304,14 @@ define( function( require ) {
       scaling = Util.clamp( scaling, 0.5, 1 );
       this.scene.setMatrix( Matrix3.scaling( scaling, scaling ) );
       this.scene.setTranslation( tx * scaling, ty * scaling );
+
+      for ( var i = 0; i < this.fallingSquares.getChildrenCount(); i++ ) {
+        var fallingSquare = this.fallingSquares.getChildAt( i );
+        fallingSquare.translate( 0, fallingSquare.speed * dt );
+        if ( fallingSquare.top > DEFAULT_LAYOUT_BOUNDS.bottom + 500 ) {
+          fallingSquare.top = -8000 + Math.random() * 4000;
+        }
+      }
     }
   } );
 } );

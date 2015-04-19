@@ -25,7 +25,9 @@ define( function( require ) {
   var Sound = require( 'VIBE/Sound' );
   var LinearGradient = require( 'SCENERY/util/LinearGradient' );
   var StarNode = require( 'SCENERY_PHET/StarNode' );
+  var StarShape = require( 'SCENERY_PHET/StarShape' );
   var Matrix3 = require( 'DOT/Matrix3' );
+  var Path = require( 'SCENERY/nodes/Path' );
 
   var smashSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/smash' );
   var crinkleSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/crinkle' );
@@ -81,37 +83,16 @@ define( function( require ) {
       stroke: 'blue'
     } ) );
 
-    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top + 200, 500, 100, {
+    var blackPlatform = new Rectangle( previousPlatform().right, previousPlatform().top + 200, 500, 100, {
       fill: 'black',
       stroke: 'blue'
-    } ) );
-
+    } );
+    this.platforms.addChild( blackPlatform );
 
     this.springBoots = this.newSpringBoots();
     this.springBoots.centerBottom = previousPlatform( 1 ).centerTop;
     this.scene.addChild( this.springBoots );
     this.acquiredSpringBoots = false;
-
-    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top + 200, 500, 100, {
-      fill: 'black',
-      stroke: 'blue'
-    } ) );
-    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top + 200, 500, 100, {
-      fill: 'red',
-      stroke: 'blue'
-    } ) );
-    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
-      fill: 'red',
-      stroke: 'blue'
-    } ) );
-    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
-      fill: 'red',
-      stroke: 'blue'
-    } ) );
-    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 8000, 100, {
-      fill: 'red',
-      stroke: 'blue'
-    } ) );
 
     for ( var i = 0; i < 5; i++ ) {
       this.platforms.addChild( new Rectangle( 0, 0, 1000 - i * 20, 100 - i * 2, {
@@ -150,10 +131,11 @@ define( function( require ) {
 
     var stars = [];
     for ( var i = 0; i < 150; i++ ) {
-      var star = new StarNode( {
+      var star = new Path( new StarShape(), {
         x: Math.random() * (space.width) + space.left,
         y: Math.random() * (space.height + 500) + space.top,
-        filledStroke: null
+        fill: '#fcff03',
+        lineJoin: 'round'
       } );
       stars.push( star );
     }
@@ -162,6 +144,39 @@ define( function( require ) {
     this.scene.addChild( this.starLayer );
 
     this.scene.addChild( this.playerNode );
+
+    this.fallingSquares = new Node();
+    for ( var i = 0; i < 100; i++ ) {
+      var fallingSquare = new Rectangle( 0, 0, 20, 20, {
+        x: 5000 + Math.random() * 1000,
+        y: -1000 + Math.random() * 500,
+        fill: 'red',
+        stroke: 'black',
+        lineWidth: 2
+      } );
+      this.fallingSquares.addChild( fallingSquare );
+    }
+
+    this.platforms.addChild( new Rectangle( blackPlatform.right, blackPlatform.top + 200, 500, 100, {
+      fill: 'black',
+      stroke: 'blue'
+    } ) );
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top + 200, 500, 100, {
+      fill: 'red',
+      stroke: 'blue'
+    } ) );
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
+      fill: 'red',
+      stroke: 'blue'
+    } ) );
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
+      fill: 'red',
+      stroke: 'blue'
+    } ) );
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 8000, 100, {
+      fill: 'red',
+      stroke: 'blue'
+    } ) );
   }
 
   return inherit( ScreenView, AnUnconventionalWeaponScreenView, {
@@ -238,6 +253,8 @@ define( function( require ) {
         if ( !star.isCollected ) {
           if ( star.bounds.intersectsBounds( this.playerNode.bounds ) ) {
             star.isCollected = true;
+            star.stroke = 'black';
+            star.lineWidth = 2;
             WOOT.play();
           }
         }

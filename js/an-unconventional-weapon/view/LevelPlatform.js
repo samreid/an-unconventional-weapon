@@ -25,6 +25,7 @@ define( function( require ) {
   var Sound = require( 'VIBE/Sound' );
   var LinearGradient = require( 'SCENERY/util/LinearGradient' );
   var StarNode = require( 'SCENERY_PHET/StarNode' );
+  var Matrix3 = require( 'DOT/Matrix3' );
 
   var smashSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/smash' );
   var crinkleSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/crinkle' );
@@ -214,7 +215,11 @@ define( function( require ) {
         ty = DEFAULT_LAYOUT_BOUNDS.centerY - this.playerNode.position.y;
       }
 
-      this.scene.setTranslation( tx, ty );
+      //linear: function( a1, a2, b1, b2, a3 ) {
+      var scaling = Util.linear( 0, -5000, 1, 0.3, this.playerNode.position.y );
+      scaling = Util.clamp( scaling, 0.5, 1 );
+      this.scene.setMatrix( Matrix3.scaling( scaling, scaling ) );
+      this.scene.setTranslation( tx * scaling, ty * scaling );
     }
   } );
 } );

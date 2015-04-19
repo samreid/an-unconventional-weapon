@@ -23,6 +23,7 @@ define( function( require ) {
   var Util = require( 'DOT/Util' );
   var DownUpListener = require( 'SCENERY/input/DownUpListener' );
   var Sound = require( 'VIBE/Sound' );
+  var Color = require( 'SCENERY/util/Color' );
 
   var smashSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/smash' );
   var crinkleSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/crinkle' );
@@ -49,10 +50,10 @@ define( function( require ) {
     var self = this;
     this.playerNode = new PlayerNode();
     this.scene = new Node();
-    this.addChild( new Rectangle( -1000, -1000, 3000, 3000, { fill: 'black' } ) );
+    this.addChild( new Rectangle( -5000, -5000, 10000, 10000, { fill: 'black' } ) );
     this.addChild( this.scene );
 
-    this.ground = new Rectangle( 0, 0, 10000, 50 + 500, {
+    this.ground = new Rectangle( 0, 0, 200000, 50 + 500, {
       fill: 'gray',
       stroke: 'white',
       lineWidth: 2,
@@ -68,11 +69,11 @@ define( function( require ) {
     var letters = 'abcdefghijklmnopqrstuvwxyz';
     var right = 0;
     for ( var i = 0; i < 400; i++ ) {
-      var index = Math.random();
-      var letter = new PhysicalText( letters[ i % letters.length ], {
+      var index = Math.floor( Math.random() * letters.length );
+      var letter = new PhysicalText( letters[ index % letters.length ], {
         fontFamily: 'Lucida Console',
         fontSize: 128,
-        fill: 'white',
+        fill: new Color( 255 - Math.random() * 100, 255 - Math.random() * 100, 255 - Math.random() * 100, 0.2 ),
         bottom: this.ground.top + 20,
         left: right + 10
       } );
@@ -91,22 +92,26 @@ define( function( require ) {
     this.scene.addChild( this.frontLetterLayer );
 
     this.animating = [];
+    this.speed = 300;
   }
 
   return inherit( ScreenView, AnUnconventionalWeaponScreenView, {
 
     // Called by the animation loop. Optional, so if your view has no animation, you can omit this.
     step: function( dt ) {
+      if ( this.speed > 3000 ) {
+        this.speed = 3000;
+      }
       if ( !inited ) {
         Input.focusedTrailProperty.value = this.getUniqueTrail();
         inited = true;
       }
 
       if ( Input.pressedKeys[ Input.KEY_LEFT_ARROW ] ) {
-        this.playerNode.velocity.x = -500;
+        this.playerNode.velocity.x = -this.speed;
       }
       else if ( Input.pressedKeys[ Input.KEY_RIGHT_ARROW ] ) {
-        this.playerNode.velocity.x = +500;
+        this.playerNode.velocity.x = +this.speed;
       }
       else {
         this.playerNode.velocity.x = this.playerNode.velocity.x * 0.9;// exponential decay for stopping.
@@ -154,7 +159,13 @@ define( function( require ) {
               letter.text === 'n' ||
               letter.text === 'd') && !letter.animating &&
              letter.bounds.intersectsBounds( this.playerNode.bounds ) ) {
+          letter.animating = true;
+          if ( letter.text === 'e' && Math.random() < 0.5 ) {
+            letter.isRightE = true;
+          }
           this.animating.push( letter );
+          WOOT.play();
+          this.speed = this.speed * 1.15;
         }
       }
       for ( var i = 0; i < this.letterLayer.getChildrenCount(); i++ ) {
@@ -166,13 +177,27 @@ define( function( require ) {
               letter.text === 'd') && !letter.animating &&
              letter.bounds.intersectsBounds( this.playerNode.bounds ) ) {
           letter.animating = true;
+          if ( letter.text === 'e' && Math.random() < 0.5 ) {
+            letter.isRightE = true;
+          }
           this.animating.push( letter );
+          WOOT.play();
+          this.speed = this.speed * 1.15;
         }
       }
 
+      var map = { t: -200, h: -120, e: -40, e2: 100, n: 180, d: 260 };
       for ( var i = 0; i < this.animating.length; i++ ) {
+
         var letter = this.animating[ i ];
-        letter.translate( 0, -10 );
+        var target = map[ letter.text ];
+        if ( letter.text === 'e' && letter.isRightE ) {
+          target = map.e2;
+        }
+        var destination = this.playerNode.center.plusXY( target, -200 );
+        var center = letter.center;
+        var delta = destination.minus( center );
+        letter.center = center.plus( delta.timesScalar( 0.2 ) );
       }
     }
   } );

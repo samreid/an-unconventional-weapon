@@ -32,11 +32,13 @@ define( function( require ) {
   var smashSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/smash' );
   var crinkleSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/crinkle' );
   var wootSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/woot' );
+  var popSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/pop' );
 
   // constants
   var SMASH = new Sound( smashSound );
   var CRINKLE = new Sound( crinkleSound );
   var WOOT = new Sound( wootSound );
+  var POP = new Sound( popSound );
 
   var gravity = new Vector2( 0, 9.8 * 200 );
 
@@ -55,6 +57,7 @@ define( function( require ) {
     this.addChild( this.scene );
 
     this.platforms = new Node();
+    this.collectedStars = [];
 
     var previousPlatform = function( i ) {
       if ( i === undefined ) {
@@ -146,7 +149,7 @@ define( function( require ) {
     this.scene.addChild( this.playerNode );
 
     this.fallingSquares = new Node();
-    for ( var i = 0; i < 100; i++ ) {
+    for ( var i = 0; i < 80; i++ ) {
       var dim = 50 + Math.random() * 50;
       var fallingSquare = new Rectangle( 0, 0, dim, dim, {
         x: Math.random() * 8000,
@@ -158,6 +161,21 @@ define( function( require ) {
       fallingSquare.speed = Math.random() * 200 + 100;
       this.fallingSquares.addChild( fallingSquare );
     }
+    var accumulated = 0;
+    for ( var i = 0; i < 80; i++ ) {
+      var dim = 50 + Math.random() * 50;
+      accumulated = accumulated + dim;
+      var fallingSquare = new Rectangle( 0, 0, dim, dim, {
+        x: 8000,
+        y: -accumulated,
+        fill: 'red',
+        stroke: 'black',
+        lineWidth: 2
+      } );
+      fallingSquare.speed = Math.random() * 100 + 300;
+      this.fallingSquares.addChild( fallingSquare );
+    }
+    this.damageCount = 0;
     this.scene.addChild( this.fallingSquares );
 
     this.platforms.addChild( new Rectangle( blackPlatform.right, blackPlatform.top + 200, 500, 100, {
@@ -259,6 +277,7 @@ define( function( require ) {
             star.stroke = 'black';
             star.lineWidth = 2;
             WOOT.play();
+            this.collectedStars.push( star );
           }
         }
       }
@@ -305,12 +324,50 @@ define( function( require ) {
       this.scene.setMatrix( Matrix3.scaling( scaling, scaling ) );
       this.scene.setTranslation( tx * scaling, ty * scaling );
 
+      var toRemove = [];
+      var playerBounds = this.playerNode.bounds;
       for ( var i = 0; i < this.fallingSquares.getChildrenCount(); i++ ) {
         var fallingSquare = this.fallingSquares.getChildAt( i );
         fallingSquare.translate( 0, fallingSquare.speed * dt );
+        if ( playerBounds.intersectsBounds( fallingSquare.bounds ) ) {
+          CRINKLE.play();
+
+          toRemove.push( fallingSquare );
+          this.playerNode.addChild( new Text( 'x', {
+            fill: 'red',
+            fontFamily: 'Lucida Console',
+            fontSize: 32,
+            centerX: 0 + Math.random() * 30 - 15,
+            centerY: -this.playerNode.height / 2 + Math.random() * 30 - 15
+          } ) );
+          this.damageCount++;
+          break;
+        }
         if ( fallingSquare.top > DEFAULT_LAYOUT_BOUNDS.bottom + 500 ) {
           fallingSquare.top = -8000 + Math.random() * 4000;
         }
+
+        for ( var j = 0; j < this.collectedStars.length; j++ ) {
+          var star = this.collectedStars[ j ];
+          if ( star.bounds.intersectsBounds( fallingSquare.bounds ) ) {
+            if ( toRemove.indexOf( fallingSquare ) >= 0 ) {}
+            else {
+              toRemove.push( fallingSquare );
+            }
+          }
+        }
+      }
+      for ( var i = 0; i < toRemove.length; i++ ) {
+        var toR = toRemove[ i ];
+        this.fallingSquares.removeChild( toR );
+      }
+      if ( toRemove.length > 0 ) {
+        POP.play();
+      }
+
+      if ( this.damageCount >= 5 ) {
+        // TODO: Comment back in after testing
+        this.context.restartLevel();
       }
     }
   } );

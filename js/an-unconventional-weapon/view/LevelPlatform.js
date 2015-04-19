@@ -307,10 +307,19 @@ define( function( require ) {
       }
       this.playerNode.setTranslation( this.playerNode.position );
 
+
       var tx = 0;
       // Scroll the scene with the player as the player moves to the right
       if ( this.playerNode.position.x > DEFAULT_LAYOUT_BOUNDS.centerX ) {
         tx = DEFAULT_LAYOUT_BOUNDS.centerX - this.playerNode.position.x;
+      }
+
+      if ( this.playerNode.position.x > 8500 ) {
+        this.scene.opacity = Util.clamp( Util.linear( 8500, 9500, 1, 0, this.playerNode.position.x ), 0, 1 );
+      }
+
+      if ( this.playerNode.position.x > 9600 ) {
+        this.context.levelComplete();
       }
 
       var ty = 0;

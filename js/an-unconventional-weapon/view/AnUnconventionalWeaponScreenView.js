@@ -14,11 +14,12 @@ define( function( require ) {
   var LevelGun = require( 'AN_UNCONVENTIONAL_WEAPON/an-unconventional-weapon/view/LevelGun' );
   var LevelRat = require( 'AN_UNCONVENTIONAL_WEAPON/an-unconventional-weapon/view/LevelRat' );
   var LevelPlatform = require( 'AN_UNCONVENTIONAL_WEAPON/an-unconventional-weapon/view/LevelPlatform' );
+  var LevelEnd = require( 'AN_UNCONVENTIONAL_WEAPON/an-unconventional-weapon/view/LevelEnd' );
   var ScreenView = require( 'JOIST/ScreenView' );
   var Input = require( 'SCENERY/input/Input' );
 
-  //var levels = [ LevelSword, LevelGun, LevelRat ];
-  var levels = [ LevelPlatform, LevelSword, LevelGun, LevelRat ];
+  var levels = [ LevelSword, LevelGun, LevelRat, LevelPlatform, LevelEnd ];
+  //var levels = [ LevelPlatform, LevelSword, LevelGun, LevelRat ];
   //var levels = [ LevelRat, LevelGun, LevelRat ];
   var levelIndex = 0;
 

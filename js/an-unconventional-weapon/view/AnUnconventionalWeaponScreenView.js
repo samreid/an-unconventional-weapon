@@ -21,7 +21,7 @@ define( function( require ) {
   var levels = [ LevelSword, LevelGun, LevelRat, LevelPlatform, LevelEnd ];
   //var levels = [ LevelPlatform, LevelSword, LevelGun, LevelRat ];
   //var levels = [ LevelRat, LevelGun, LevelRat ];
-  var levels = [ LevelEnd, LevelGun, LevelRat ];
+  //var levels = [ LevelEnd, LevelGun, LevelRat ];
   var levelIndex = 0;
 
   window.TouchPower = {

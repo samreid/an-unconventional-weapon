@@ -95,6 +95,12 @@ define( function( require ) {
         enemy.left = 2500;
       }
     }
+
+    this.scene.addChild( new Text( 'Level 2', {
+      fontSize: 60,
+      centerX: DEFAULT_LAYOUT_BOUNDS.centerX,
+      centerY: 100
+    } ) );
   }
 
   return inherit( ScreenView, AnUnconventionalWeaponScreenView, {
@@ -185,7 +191,6 @@ define( function( require ) {
             enemiesToRemove.push( enemy );
             this.scene.removeChild( enemy );
             this.scene.removeChild( bullet );
-            console.log( 'removed bulled', bullet.text );
             toRemove.push( bullet );
             alreadyHitOnce = true;
           }

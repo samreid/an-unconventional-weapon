@@ -110,6 +110,13 @@ define( function( require ) {
     this.sentence = sentence;
 
     this.sentence.doneRotating = false;
+
+    this.level3Text = new Text( 'Level 3', {
+      fontSize: 60,
+      centerX: DEFAULT_LAYOUT_BOUNDS.centerX,
+      centerY: 100
+    } );
+    this.scene.addChild( this.level3Text );
   }
 
   return inherit( ScreenView, AnUnconventionalWeaponScreenView, {
@@ -306,6 +313,8 @@ define( function( require ) {
         a2.leftBottom = this.playerNode.rightBottom.plusXY( 40 - this.sentence.x, -this.sentence.y );
         w.leftBottom = this.playerNode.rightBottom.plusXY( 80 - this.sentence.x, -this.sentence.y );
       }
+
+      this.level3Text.opacity = Util.clamp( Util.linear( 100, 400, 1, 0, this.playerNode.position.x ), 0, 1 );
 
       if ( w.bounds.intersectsBounds( a.bounds ) && !sawing ) {
         if ( !playedSawSound ) {

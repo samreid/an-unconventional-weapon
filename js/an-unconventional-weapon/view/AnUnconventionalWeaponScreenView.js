@@ -22,7 +22,7 @@ define( function( require ) {
   //var levels = [ LevelPlatform, LevelSword, LevelGun, LevelRat ];
   //var levels = [ LevelRat, LevelGun, LevelRat ];
   //var levels = [ LevelEnd, LevelGun, LevelRat ];
-  var levelIndex = 0;
+  var levelIndex = 3;
 
   window.TouchPower = {
     leftTouch: false, rightTouch: false, upTouch: false, spacebarTouch: false,

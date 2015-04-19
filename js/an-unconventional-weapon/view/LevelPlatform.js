@@ -198,6 +198,12 @@ define( function( require ) {
       fill: 'red',
       stroke: 'blue'
     } ) );
+
+    this.scene.addChild( new Text( 'Level 4', {
+      fontSize: 60,
+      centerX: DEFAULT_LAYOUT_BOUNDS.centerX,
+      centerY: 100
+    } ) );
   }
 
   return inherit( ScreenView, AnUnconventionalWeaponScreenView, {
@@ -235,7 +241,6 @@ define( function( require ) {
           v = -2000;
         }
 
-        console.log( v );
         this.playerNode.velocity.y = v;
         // Prevent detecting collision right away
         this.playerNode.translate( 0, -1 );

@@ -89,6 +89,8 @@ define( function( require ) {
     this.scene.addChild( this.letterLayer );
     this.scene.addChild( this.playerNode );
     this.scene.addChild( this.frontLetterLayer );
+
+    this.animating = [];
   }
 
   return inherit( ScreenView, AnUnconventionalWeaponScreenView, {
@@ -142,6 +144,35 @@ define( function( require ) {
       // Scroll the scene with the player as the player moves to the right
       if ( this.playerNode.position.x > DEFAULT_LAYOUT_BOUNDS.centerX ) {
         this.scene.setTranslation( DEFAULT_LAYOUT_BOUNDS.centerX - this.playerNode.position.x, 0 );
+      }
+
+      for ( var i = 0; i < this.frontLetterLayer.getChildrenCount(); i++ ) {
+        var letter = this.frontLetterLayer.getChildAt( i );
+        if ( (letter.text === 't' ||
+              letter.text === 'h' ||
+              letter.text === 'e' ||
+              letter.text === 'n' ||
+              letter.text === 'd') && !letter.animating &&
+             letter.bounds.intersectsBounds( this.playerNode.bounds ) ) {
+          this.animating.push( letter );
+        }
+      }
+      for ( var i = 0; i < this.letterLayer.getChildrenCount(); i++ ) {
+        var letter = this.letterLayer.getChildAt( i );
+        if ( (letter.text === 't' ||
+              letter.text === 'h' ||
+              letter.text === 'e' ||
+              letter.text === 'n' ||
+              letter.text === 'd') && !letter.animating &&
+             letter.bounds.intersectsBounds( this.playerNode.bounds ) ) {
+          letter.animating = true;
+          this.animating.push( letter );
+        }
+      }
+
+      for ( var i = 0; i < this.animating.length; i++ ) {
+        var letter = this.animating[ i ];
+        letter.translate( 0, -10 );
       }
     }
   } );

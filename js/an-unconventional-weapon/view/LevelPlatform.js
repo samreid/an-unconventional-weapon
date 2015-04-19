@@ -23,6 +23,8 @@ define( function( require ) {
   var Util = require( 'DOT/Util' );
   var DownUpListener = require( 'SCENERY/input/DownUpListener' );
   var Sound = require( 'VIBE/Sound' );
+  var LinearGradient = require( 'SCENERY/util/LinearGradient' );
+  var StarNode = require( 'SCENERY_PHET/StarNode' );
 
   var smashSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/smash' );
   var crinkleSound = require( 'audio!AN_UNCONVENTIONAL_WEAPON/crinkle' );
@@ -48,8 +50,6 @@ define( function( require ) {
     this.playerNode = new PlayerNode();
     this.scene = new Node();
     this.addChild( this.scene );
-
-    this.scene.addChild( this.playerNode );
 
     this.platforms = new Node();
     this.scene.addChild( this.platforms );
@@ -85,18 +85,62 @@ define( function( require ) {
       fill: 'black',
       stroke: 'blue'
     } ) );
+
+    this.springBoots = this.newSpringBoots();
+    this.springBoots.centerBottom = previousPlatform( 1 ).centerTop;
+    this.scene.addChild( this.springBoots );
+    this.acquiredSpringBoots = false;
+
+    for ( var i = 0; i < 5; i++ ) {
+      this.platforms.addChild( new Rectangle( 0, 0, 1000 - i * 20, 100 - i * 2, {
+        fill: 'black',
+        stroke: 'blue',
+        centerX: Math.abs( Math.random() < 0.3 ? previousPlatform( 0 ).left - 100 : previousPlatform( 0 ).right + 100 ),
+        bottom: previousPlatform( 0 ).top - 800
+      } ) );
+    }
+    var gradient = new Rectangle( 0, 0, 5000, 1000, {
+      bottom: previousPlatform().top,
+      fill: new LinearGradient( 0, 0, 0, 1000 ).addColorStop( 0, 'black' ).addColorStop( 1, 'white' )
+    } );
+    this.scene.addChild( gradient );
+    var space = new Rectangle( 0, 0, 5000, 1000, {
+      fill: 'black',
+      centerBottom: gradient.centerTop.plusXY( 0, 2 )
+    } );
+    this.scene.addChild( space );
+    for ( var i = 0; i < 100; i++ ) {
+      var star = new StarNode( {
+        x: Math.random() * (space.width) + space.left,
+        y: Math.random() * (space.height) + space.top,
+        filledStroke: null
+      } );
+      this.scene.addChild( star );
+    }
+
+    this.scene.addChild( this.playerNode );
   }
 
   return inherit( ScreenView, AnUnconventionalWeaponScreenView, {
+    newSpringBoots: function() {
+      var springboots = new Node( {
+        children: [
+          new Rectangle( -10, 0, 10, 15, { fill: 'red', stroke: 'black' } ),
+          new Rectangle( 5, 0, 10, 15, { fill: 'red', stroke: 'black' } )
+        ]
+      } );
+      return springboots;
+    },
 
     // Called by the animation loop. Optional, so if your view has no animation, you can omit this.
     step: function( dt ) {
 
+      var speed = this.acquiredSpringBoots ? 500 : 300;
       if ( Input.pressedKeys[ Input.KEY_LEFT_ARROW ] ) {
-        this.playerNode.velocity.x = -300;
+        this.playerNode.velocity.x = -speed;
       }
       else if ( Input.pressedKeys[ Input.KEY_RIGHT_ARROW ] ) {
-        this.playerNode.velocity.x = +300;
+        this.playerNode.velocity.x = +speed;
       }
       else {
         this.playerNode.velocity.x = this.playerNode.velocity.x * 0.9;// exponential decay for stopping.
@@ -107,7 +151,13 @@ define( function( require ) {
       }
 
       if ( Input.pressedKeys[ Input.KEY_UP_ARROW ] && this.playerNode.onGround ) {
-        this.playerNode.velocity.y = -1000;
+        var v = -1000;
+        if ( this.acquiredSpringBoots ) {
+          v = -2000;
+        }
+
+        console.log( v );
+        this.playerNode.velocity.y = v;
         // Prevent detecting collision right away
         this.playerNode.translate( 0, -1 );
         if ( this.playerNode.onGround ) {
@@ -124,13 +174,23 @@ define( function( require ) {
       for ( var i = 0; i < this.platforms.getChildrenCount(); i++ ) {
         var platform = this.platforms.getChildAt( i );
         if ( platform.bounds.intersectsBounds( this.playerNode.bounds ) ) {
-          this.playerNode.position.y = platform.top;
+          this.playerNode.bottom = platform.top;
+          this.playerNode.position.y = this.playerNode.y;
           this.playerNode.velocity.y = 0;
           if ( !this.playerNode.onGround ) {
             SMASH.play();
           }
           this.playerNode.onGround = true;
         }
+      }
+
+      if ( !this.acquiredSpringBoots && this.playerNode.bounds.intersectsBounds( this.springBoots.bounds ) ) {
+        this.acquiredSpringBoots = true;
+        this.playerNode.addChild( this.newSpringBoots() );
+        this.scene.removeChild( this.springBoots );
+      }
+
+      if ( this.acquiredSpringBoots ) {
       }
 
       // Player died
@@ -140,15 +200,6 @@ define( function( require ) {
 
       if ( this.playerNode.position.x < 0 ) {
         this.playerNode.position.x = 0;
-      }
-      if ( this.playerNode.position.x > 2900 ) {
-        //new Level
-        //linear: function( a1, a2, b1, b2, a3 ) {
-        //this.ludumDareEntry.opacity = Util.clamp( Util.linear( 20, 200, 1, 0, this.playerNode.position.x ), 0, 1 );
-        this.scene.opacity = Util.clamp( Util.linear( 2900, 3000, 1, 0, this.playerNode.position.x ), 0, 1 );
-        if ( this.playerNode.position.x > 3000 ) {
-          this.parent.levelComplete();
-        }
       }
       this.playerNode.setTranslation( this.playerNode.position );
 

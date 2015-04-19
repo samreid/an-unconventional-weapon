@@ -113,7 +113,7 @@ define( function( require ) {
     this.scene.addChild( space );
 
     var stars = [];
-    for ( var i = 0; i < 100; i++ ) {
+    for ( var i = 0; i < 150; i++ ) {
       var star = new StarNode( {
         x: Math.random() * (space.width) + space.left,
         y: Math.random() * (space.height + 500) + space.top,
@@ -121,8 +121,8 @@ define( function( require ) {
       } );
       stars.push( star );
     }
-    var starLayer = new Node( { children: stars } );
-    this.scene.addChild( starLayer );
+    this.starLayer = new Node( { children: stars } );
+    this.scene.addChild( this.starLayer );
 
     this.scene.addChild( this.playerNode );
   }
@@ -196,7 +196,29 @@ define( function( require ) {
         this.scene.removeChild( this.springBoots );
       }
 
-      if ( this.acquiredSpringBoots ) {
+      for ( var i = 0; i < this.starLayer.getChildrenCount(); i++ ) {
+        var star = this.starLayer.getChildAt( i );
+        if ( !star.isCollected ) {
+          if ( star.bounds.intersectsBounds( this.playerNode.bounds ) ) {
+            star.isCollected = true;
+            WOOT.play();
+          }
+        }
+      }
+
+      var collectedCount = 0;
+      for ( var i = 0; i < this.starLayer.getChildrenCount(); i++ ) {
+        var star = this.starLayer.getChildAt( i );
+        if ( star.isCollected ) {
+          collectedCount++;
+          var center = star.center;
+          var target = this.playerNode.center.plus( Vector2.createPolar( 200, collectedCount * Math.PI / 7 + Date.now() / 1000 * Math.PI / 2 ) );
+          star.rotate( Math.PI * dt );
+          var delta = target.minus( center );
+          var dx = delta.timesScalar( 0.1 );
+          var newPosition = center.plus( dx );
+          star.center = newPosition;
+        }
       }
 
       // Player died

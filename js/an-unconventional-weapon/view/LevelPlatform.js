@@ -53,7 +53,6 @@ define( function( require ) {
     this.addChild( this.scene );
 
     this.platforms = new Node();
-    this.scene.addChild( this.platforms );
 
     var previousPlatform = function( i ) {
       if ( i === undefined ) {
@@ -95,7 +94,6 @@ define( function( require ) {
     for ( var i = 0; i < 5; i++ ) {
       this.platforms.addChild( new Rectangle( 0, 0, 1000 - i * 20, 100 - i * 2, {
         fill: 'black',
-        stroke: 'blue',
         centerX: Math.abs( Math.random() < 0.3 ? previousPlatform( 0 ).left - 100 : previousPlatform( 0 ).right + 100 ),
         bottom: previousPlatform( 0 ).top - 800
       } ) );
@@ -105,12 +103,28 @@ define( function( require ) {
       fill: new LinearGradient( 0, 0, 0, 3000 ).addColorStop( 0, 'black' ).addColorStop( 1, 'white' )
     } );
     this.scene.addChild( gradient );
+
     gradient.moveToBack();
-    var space = new Rectangle( 0, 0, 8000, 1000, {
+
+    //with stars
+    var space = new Rectangle( 0, 0, 8000, 2000, {
       fill: 'black',
       centerBottom: gradient.centerTop.plusXY( 0, 2 )
     } );
     this.scene.addChild( space );
+    var aboveSpace = new Rectangle( 0, 0, 8000, 8000, {
+      fill: 'black',
+      centerBottom: space.centerTop.plusXY( 0, 2 )
+    } );
+    this.scene.addChild( aboveSpace );
+
+    for ( var i = 0; i < 5; i++ ) {
+      this.platforms.addChild( new Rectangle( 0, 0, 1000 - i * 20, 100 - i * 2, {
+        fill: 'gray',
+        centerX: Math.abs( Math.random() < 0.3 ? previousPlatform( 0 ).left - 100 : previousPlatform( 0 ).right + 100 ),
+        bottom: previousPlatform( 0 ).top - 800
+      } ) );
+    }
 
     var stars = [];
     for ( var i = 0; i < 150; i++ ) {
@@ -121,6 +135,7 @@ define( function( require ) {
       } );
       stars.push( star );
     }
+    this.scene.addChild( this.platforms );
     this.starLayer = new Node( { children: stars } );
     this.scene.addChild( this.starLayer );
 

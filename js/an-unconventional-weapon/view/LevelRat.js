@@ -121,21 +121,21 @@ define( function( require ) {
         inited = true;
       }
 
-      if ( Input.pressedKeys[ Input.KEY_LEFT_ARROW ] && Date.now() - lastTimeHitRat > 500 ) {
+      if ( TouchPower.left && Date.now() - lastTimeHitRat > 500 ) {
         this.playerNode.velocity.x = -300;
       }
-      else if ( Input.pressedKeys[ Input.KEY_RIGHT_ARROW ] && Date.now() - lastTimeHitRat > 500 ) {
+      else if ( TouchPower.right && Date.now() - lastTimeHitRat > 500 ) {
         this.playerNode.velocity.x = +300;
       }
       else {
         this.playerNode.velocity.x = this.playerNode.velocity.x * 0.9;// exponential decay for stopping.
       }
 
-      if ( Input.pressedKeys[ Input.KEY_SPACE ] && sawReady ) {
+      if ( TouchPower.spacebar && sawReady ) {
         //swingingSword = true;
       }
 
-      if ( Input.pressedKeys[ Input.KEY_UP_ARROW ] && this.playerNode.onGround ) {
+      if ( TouchPower.up && this.playerNode.onGround ) {
         this.playerNode.velocity.y = -1000;
         if ( this.playerNode.onGround ) {
           WOOT.play();

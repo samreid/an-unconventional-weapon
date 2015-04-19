@@ -209,10 +209,10 @@ define( function( require ) {
         }
       }
 
-      if ( Input.pressedKeys[ Input.KEY_LEFT_ARROW ] ) {
+      if ( TouchPower.left ) {
         this.playerNode.velocity.x = -300;
       }
-      else if ( Input.pressedKeys[ Input.KEY_RIGHT_ARROW ] ) {
+      else if ( TouchPower.right ) {
         this.playerNode.velocity.x = +300;
       }
       else {
@@ -222,7 +222,7 @@ define( function( require ) {
         this.playerNode.velocity.x = -500;
       }
 
-      if ( Input.pressedKeys[ Input.KEY_SPACE ] && collected.length > 0 && achievedGUN ) {
+      if ( TouchPower.spacebar && collected.length > 0 && achievedGUN ) {
         if ( Date.now() - lastPopTime > 300 ) {
           POP.play();
           lastPopTime = Date.now();
@@ -235,7 +235,7 @@ define( function( require ) {
         }
       }
 
-      if ( Input.pressedKeys[ Input.KEY_UP_ARROW ] && this.playerNode.onGround ) {
+      if ( TouchPower.up && this.playerNode.onGround ) {
         this.playerNode.velocity.y = -1000;
         if ( this.playerNode.onGround ) {
           WOOT.play();

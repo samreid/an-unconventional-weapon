@@ -15,7 +15,8 @@ define( function( require ) {
   var LevelRat = require( 'AN_UNCONVENTIONAL_WEAPON/an-unconventional-weapon/view/LevelRat' );
   var ScreenView = require( 'JOIST/ScreenView' );
 
-  var levels = [ LevelRat, LevelSword, LevelGun ];
+  var levels = [ LevelSword, LevelGun, LevelRat ];
+  //var levels = [ LevelRat, LevelGun, LevelRat ];
   var levelIndex = 0;
 
   /**

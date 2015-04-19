@@ -52,6 +52,8 @@ define( function( require ) {
   var sawTime = 0;
   var sawing = false;
 
+  var wasOnGroundOnce = false;
+
   /**
    * @param {AnUnconventionalWeaponModel} anUnconventionalWeaponModel
    * @constructor
@@ -144,7 +146,7 @@ define( function( require ) {
       // Handle view animation here.
       this.playerNode.velocity = this.playerNode.velocity.plus( gravity.timesScalar( dt ) );
 
-      if ( this.playerNode.bounds.intersectsBounds( this.sentence.bounds ) && !this.sentence.doneRotating ) {
+      if ( wasOnGroundOnce && this.playerNode.bounds.intersectsBounds( this.sentence.bounds ) && !this.sentence.doneRotating ) {
         this.playerNode.velocity.y = Math.abs( this.playerNode.velocity.y );
         this.playerNode.top = this.sentence.bottom + 10;
         SMASH.play();
@@ -279,6 +281,12 @@ define( function( require ) {
         a.bottom = this.playerNode.bottom - this.sentence.y + 30;
         t.bottom = this.playerNode.bottom - this.sentence.y + 30;
 
+        if ( sawing ) {
+          r.bottom = this.ground.top - this.sentence.y + 30;
+          a.bottom = this.ground.top - this.sentence.y + 30;
+          t.bottom = this.ground.top - this.sentence.y + 30;
+        }
+
         // Bump player back
         if ( this.playerNode.globalBounds.right > r.globalBounds.left && !sawing ) {
           this.playerNode.velocity.x = -800;
@@ -305,6 +313,7 @@ define( function( require ) {
           playedSawSound = true;
           sawTime = Date.now();
           sawing = true;
+          this.barrier.visible = false;
 
           var rCenter = r.center;
           var aCenter = a.center;
@@ -339,6 +348,7 @@ define( function( require ) {
           SMASH.play();
         }
         this.playerNode.onGround = true;
+        wasOnGroundOnce = true;
       }
 
       if ( this.playerNode.position.x < 0 ) {
@@ -352,6 +362,9 @@ define( function( require ) {
         if ( this.playerNode.position.x > 3000 ) {
           this.parent.levelComplete();
         }
+      }
+      if ( this.barrier.visible ) {
+        this.playerNode.position.x = Math.min( this.playerNode.position.x, this.barrier.left - this.playerNode.width / 2 );
       }
       this.playerNode.setTranslation( this.playerNode.position );
 

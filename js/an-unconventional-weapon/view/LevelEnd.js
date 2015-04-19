@@ -49,19 +49,46 @@ define( function( require ) {
     var self = this;
     this.playerNode = new PlayerNode();
     this.scene = new Node();
+    this.addChild( new Rectangle( -1000, -1000, 3000, 3000, { fill: 'black' } ) );
     this.addChild( this.scene );
 
     this.ground = new Rectangle( 0, 0, 10000, 50 + 500, {
-      fill: 'yellow',
-      stroke: 'black',
+      fill: 'gray',
+      stroke: 'white',
       lineWidth: 2,
       bottom: DEFAULT_LAYOUT_BOUNDS.bottom + 500
     } );
     this.scene.addChild( this.ground );
-    this.scene.addChild( this.playerNode );
 
-    this.barrier = new Rectangle( 0, 0, 2000, 2000, { bottom: this.ground.top, x: 2500, fill: 'red' } );
-    this.scene.addChild( this.barrier );
+    this.frontLetterLayer = new Node();
+    this.letterLayer = new Node();
+    var previousLetter = function() {
+      return self.letterLayer.getChildAt( self.letterLayer.getChildrenCount() - 1 );
+    };
+    var letters = 'abcdefghijklmnopqrstuvwxyz';
+    var right = 0;
+    for ( var i = 0; i < 400; i++ ) {
+      var index = Math.random();
+      var letter = new PhysicalText( letters[ i % letters.length ], {
+        fontFamily: 'Lucida Console',
+        fontSize: 128,
+        fill: 'white',
+        bottom: this.ground.top + 20,
+        left: right + 10
+      } );
+      var rand = Math.random() < 0.5;
+      if ( rand ) {
+        this.letterLayer.addChild( letter );
+      }
+      else {
+        this.frontLetterLayer.addChild( letter );
+      }
+      right = letter.right;
+
+    }
+    this.scene.addChild( this.letterLayer );
+    this.scene.addChild( this.playerNode );
+    this.scene.addChild( this.frontLetterLayer );
   }
 
   return inherit( ScreenView, AnUnconventionalWeaponScreenView, {
@@ -74,16 +101,16 @@ define( function( require ) {
       }
 
       if ( Input.pressedKeys[ Input.KEY_LEFT_ARROW ] ) {
-        this.playerNode.velocity.x = -300;
+        this.playerNode.velocity.x = -500;
       }
       else if ( Input.pressedKeys[ Input.KEY_RIGHT_ARROW ] ) {
-        this.playerNode.velocity.x = +300;
+        this.playerNode.velocity.x = +500;
       }
       else {
         this.playerNode.velocity.x = this.playerNode.velocity.x * 0.9;// exponential decay for stopping.
       }
 
-      if ( Input.pressedKeys[ Input.KEY_SPACE ] && swordReady ) {
+      if ( Input.pressedKeys[ Input.KEY_SPACE ] ) {
         //swingingSword = true;
       }
 
@@ -110,19 +137,10 @@ define( function( require ) {
       if ( this.playerNode.position.x < 0 ) {
         this.playerNode.position.x = 0;
       }
-      if ( this.playerNode.position.x > 2900 ) {
-        //new Level
-        //linear: function( a1, a2, b1, b2, a3 ) {
-        //this.ludumDareEntry.opacity = Util.clamp( Util.linear( 20, 200, 1, 0, this.playerNode.position.x ), 0, 1 );
-        this.scene.opacity = Util.clamp( Util.linear( 2900, 3000, 1, 0, this.playerNode.position.x ), 0, 1 );
-        if ( this.playerNode.position.x > 3000 ) {
-          this.parent.levelComplete();
-        }
-      }
       this.playerNode.setTranslation( this.playerNode.position );
 
       // Scroll the scene with the player as the player moves to the right
-      if ( this.playerNode.position.x > DEFAULT_LAYOUT_BOUNDS.centerX && this.playerNode.position.x < 2300 ) {
+      if ( this.playerNode.position.x > DEFAULT_LAYOUT_BOUNDS.centerX ) {
         this.scene.setTranslation( DEFAULT_LAYOUT_BOUNDS.centerX - this.playerNode.position.x, 0 );
       }
     }

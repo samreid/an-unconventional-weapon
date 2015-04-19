@@ -39,8 +39,8 @@ define( function( require ) {
    * @param {AnUnconventionalWeaponModel} anUnconventionalWeaponModel
    * @constructor
    */
-  function AnUnconventionalWeaponScreenView( parent ) {
-    this.parent = parent;
+  function AnUnconventionalWeaponScreenView( context ) {
+    this.context = context;
 
     ScreenView.call( this );
 
@@ -53,10 +53,32 @@ define( function( require ) {
 
     this.platforms = new Node();
     this.scene.addChild( this.platforms );
-    this.platforms.addChild( new Rectangle( 0, 0, 500, 50 + 500, {
+
+    var previousPlatform = function( i ) {
+      if ( i === undefined ) {
+        i = 0;
+      }
+      return self.platforms.getChildAt( self.platforms.getChildrenCount() - 1 - i );
+    };
+    this.platforms.addChild( new Rectangle( 0, 0, 500, 550, {
       fill: 'yellow',
       bottom: DEFAULT_LAYOUT_BOUNDS.bottom + 500,
       stroke: 'black'
+    } ) );
+
+    this.platforms.addChild( new Rectangle( 600, 400, 500, 100, {
+      fill: 'orange',
+      stroke: 'black'
+    } ) );
+
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top - 200, 500, 100, {
+      fill: 'green',
+      stroke: 'black'
+    } ) );
+
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top - 200, 500, 100, {
+      fill: 'black',
+      stroke: 'blue'
     } ) );
   }
 
@@ -81,6 +103,8 @@ define( function( require ) {
 
       if ( Input.pressedKeys[ Input.KEY_UP_ARROW ] && this.playerNode.onGround ) {
         this.playerNode.velocity.y = -1000;
+        // Prevent detecting collision right away
+        this.playerNode.translate( 0, -1 );
         if ( this.playerNode.onGround ) {
           WOOT.play();
         }
@@ -90,13 +114,22 @@ define( function( require ) {
       // Handle view animation here.
       this.playerNode.velocity = this.playerNode.velocity.plus( gravity.timesScalar( dt ) );
       this.playerNode.position = this.playerNode.position.plus( this.playerNode.velocity.timesScalar( dt ) );
-      if ( this.playerNode.position.y > DEFAULT_LAYOUT_BOUNDS.bottom - 50 ) {
-        this.playerNode.position.y = DEFAULT_LAYOUT_BOUNDS.bottom - 50;
 
-        if ( !this.playerNode.onGround ) {
-          SMASH.play();
+      //Don't let the player pass through a platform
+      for ( var i = 0; i < this.platforms.getChildrenCount(); i++ ) {
+        var platform = this.platforms.getChildAt( i );
+        if ( platform.bounds.intersectsBounds( this.playerNode.bounds ) ) {
+          this.playerNode.position.y = platform.top;
+          this.playerNode.velocity.y = 0;
+          if ( !this.playerNode.onGround ) {
+            SMASH.play();
+          }
+          this.playerNode.onGround = true;
         }
-        this.playerNode.onGround = true;
+      }
+
+      if ( this.playerNode.position.y > 2000 ) {
+        this.context.restartLevel();
       }
 
       if ( this.playerNode.position.x < 0 ) {
@@ -113,10 +146,18 @@ define( function( require ) {
       }
       this.playerNode.setTranslation( this.playerNode.position );
 
+      var tx = 0;
       // Scroll the scene with the player as the player moves to the right
       if ( this.playerNode.position.x > DEFAULT_LAYOUT_BOUNDS.centerX && this.playerNode.position.x < 2300 ) {
-        this.scene.setTranslation( DEFAULT_LAYOUT_BOUNDS.centerX - this.playerNode.position.x, 0 );
+        tx = DEFAULT_LAYOUT_BOUNDS.centerX - this.playerNode.position.x;
       }
+
+      var ty = 0;
+      if ( this.playerNode.position.y < DEFAULT_LAYOUT_BOUNDS.centerY ) {
+        ty = DEFAULT_LAYOUT_BOUNDS.centerY - this.playerNode.position.y;
+      }
+
+      this.scene.setTranslation( tx, ty );
     }
   } );
 } );

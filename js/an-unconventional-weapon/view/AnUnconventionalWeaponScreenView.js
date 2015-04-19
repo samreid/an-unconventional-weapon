@@ -80,6 +80,12 @@ define( function( require ) {
     step: function( dt ) {
       this.activeLevel.step( dt );
     },
+    restartLevel: function() {
+      this.removeChild( this.activeLevel );
+      var level = levels[ levelIndex ];
+      this.activeLevel = new level( this );
+      this.addChild( this.activeLevel );
+    },
     levelComplete: function() {
       this.removeChild( this.activeLevel );
       levelIndex++;

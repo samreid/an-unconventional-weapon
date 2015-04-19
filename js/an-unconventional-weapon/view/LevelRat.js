@@ -40,6 +40,7 @@ define( function( require ) {
 
   var sawReady = false;
   var inited = false;
+  var growthSteps = 0;
 
   /**
    * @param {AnUnconventionalWeaponModel} anUnconventionalWeaponModel
@@ -208,44 +209,48 @@ define( function( require ) {
         }
       }
 
+      var r = this.sentence.getChildAt( 9 );
+      var a = this.sentence.getChildAt( 10 );
+      var t = this.sentence.getChildAt( 11 );
+
       //this.sentence.rotating = true;
       if ( this.sentence.doneRotating ) {
 
-        var r = this.sentence.getChildAt( 9 );
-        var a = this.sentence.getChildAt( 10 );
-        var t = this.sentence.getChildAt( 11 );
-        var rTarget = new Vector2( DEFAULT_LAYOUT_BOUNDS.width - 100 - this.sentence.x + 0, this.ground.top - r.height / 2 - this.sentence.y );
-        var aTarget = new Vector2( DEFAULT_LAYOUT_BOUNDS.width - 100 - this.sentence.x + 40, this.ground.top - a.height / 2 - this.sentence.y );
-        var tTarget = new Vector2( DEFAULT_LAYOUT_BOUNDS.width - 100 - this.sentence.x + 80, this.ground.top - t.height / 2 - this.sentence.y );
+        var rTarget = new Vector2( DEFAULT_LAYOUT_BOUNDS.width - this.sentence.x + 0, this.ground.top - this.sentence.y + 30 );
+        var aTarget = new Vector2( DEFAULT_LAYOUT_BOUNDS.width - this.sentence.x + 80, this.ground.top - this.sentence.y + 30 );
+        var tTarget = new Vector2( DEFAULT_LAYOUT_BOUNDS.width - this.sentence.x + 160, this.ground.top - this.sentence.y + 30 );
 
-        var rDist = rTarget.minus( r.center );
-        r.center = r.center.plus( rDist.timesScalar( 0.04 ) );
-        var aDist = aTarget.minus( a.center );
-        a.center = a.center.plus( aDist.timesScalar( 0.03 ) );
-        var tDist = tTarget.minus( t.center );
-        t.center = t.center.plus( tDist.timesScalar( 0.02 ) );
+        var scale = 1.006;
+
+        if ( growthSteps < 2 * 60 ) {
+          r.scale( scale );
+          a.scale( scale );
+          t.scale( scale );
+          growthSteps++;
+        }
+
+        var rDist = rTarget.minus( r.centerBottom );
+        r.centerBottom = r.centerBottom.plus( rDist.timesScalar( 0.1 ) );
+
+        var aDist = aTarget.minus( a.centerBottom );
+        a.centerBottom = a.centerBottom.plus( aDist.timesScalar( 0.08 ) );
+
+        var tDist = tTarget.minus( t.centerBottom );
+        t.centerBottom = t.centerBottom.plus( tDist.timesScalar( 0.06 ) );
+
         if ( rDist.magnitude() < 2 ) {
           r.text = 'R';
-          r.center = rTarget;
+          r.centerBottom = rTarget;
         }
         if ( aDist.magnitude() < 2 ) {
           a.text = 'A';
-          a.center = aTarget;
+          a.centerBottom = aTarget;
         }
         if ( tDist.magnitude() < 2 ) {
           t.text = 'T';
-          t.center = tTarget;
+          t.centerBottom = tTarget;
         }
 
-        //this.sentence.getChildAt( 9 ).velocity = this.sentence.getChildAt( 9 ).velocity.plus( gravity.timesScalar( dt ) );
-        //this.sentence.getChildAt( 10 ).velocity = this.sentence.getChildAt( 10 ).velocity.plus( gravity.timesScalar( dt ) );
-        //this.sentence.getChildAt( 11 ).velocity = this.sentence.getChildAt( 11 ).velocity.plus( gravity.timesScalar( dt ) );
-        //
-        //this.sentence.getChildAt( 9 ).position = this.sentence.getChildAt( 9 ).position.plus( this.sentence.getChildAt( 9 ).velocity.timesScalar( dt ) );
-        //this.sentence.getChildAt( 10 ).position = this.sentence.getChildAt( 10 ).position.plus( this.sentence.getChildAt( 10 ).velocity.timesScalar( dt ) );
-        //this.sentence.getChildAt( 11 ).position = this.sentence.getChildAt( 11 ).position.plus( this.sentence.getChildAt( 11 ).velocity.timesScalar( dt ) );
-        //
-        //this.sentence.getChildAt( 9 ).center = this.sentence.getChildAt( 9 ).position;
       }
 
       if ( Math.abs( vectorTowardTarget ) < 0.001 ) {

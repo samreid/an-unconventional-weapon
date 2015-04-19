@@ -149,7 +149,7 @@ define( function( require ) {
     this.scene.addChild( this.playerNode );
 
     this.fallingSquares = new Node();
-    for ( var i = 0; i < 80; i++ ) {
+    for ( var i = 0; i < 50; i++ ) {
       var dim = 50 + Math.random() * 50;
       var fallingSquare = new Rectangle( 0, 0, dim, dim, {
         x: Math.random() * 8000,
@@ -162,11 +162,11 @@ define( function( require ) {
       this.fallingSquares.addChild( fallingSquare );
     }
     var accumulated = 0;
-    for ( var i = 0; i < 80; i++ ) {
+    for ( var i = 0; i < 120; i++ ) {
       var dim = 50 + Math.random() * 50;
       accumulated = accumulated + dim;
       var fallingSquare = new Rectangle( 0, 0, dim, dim, {
-        x: 8000,
+        x: 8000 + Math.random() * 10 - dim / 2,
         y: -accumulated,
         fill: 'red',
         stroke: 'black',

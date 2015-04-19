@@ -20,7 +20,8 @@ define( function( require ) {
    */
   function PlayerNode() {
     Node.call( this );
-    this.addChild( new Circle( 30, { fill: 'blue', y: -30 } ) );
+    this.circleGraphic = new Circle( 30, { fill: 'blue', y: -30 } );
+    this.addChild( this.circleGraphic );
     this.velocity = new Vector2( 0, 0 );
     this.position = new Vector2( 20, 100 );
     this.onGround = false;

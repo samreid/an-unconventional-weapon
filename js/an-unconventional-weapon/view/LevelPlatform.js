@@ -210,8 +210,20 @@ define( function( require ) {
     newSpringBoots: function() {
       var springboots = new Node( {
         children: [
-          new Rectangle( -10, 0, 10, 15, { fill: 'green', stroke: 'black' } ),
-          new Rectangle( 5, 0, 10, 15, { fill: 'green', stroke: 'black' } )
+          new Text( 'Jumpy', {
+            fontSize: 22,
+            fill: 'blue',
+            rotation: 3 * Math.PI / 2,
+            fontFamily: 'Lucida Console',
+            x: -11
+          } ),
+          new Text( 'Boots', {
+            fontSize: 22,
+            fill: 'blue',
+            rotation: 3 * Math.PI / 2,
+            fontFamily: 'Lucida Console',
+            x: 11
+          } )
         ]
       } );
       return springboots;
@@ -270,7 +282,9 @@ define( function( require ) {
 
       if ( !this.acquiredSpringBoots && this.playerNode.bounds.intersectsBounds( this.springBoots.bounds ) ) {
         this.acquiredSpringBoots = true;
-        this.playerNode.addChild( this.newSpringBoots() );
+        var b = this.newSpringBoots();
+        b.translate( 0, 70 );
+        this.playerNode.addChild( b );
         this.scene.removeChild( this.springBoots );
       }
 
@@ -347,12 +361,12 @@ define( function( require ) {
           CRINKLE.play();
 
           toRemove.push( fallingSquare );
-          this.playerNode.addChild( new Text( 'x', {
+          this.playerNode.circleGraphic.addChild( new Text( 'x', {
             fill: 'red',
             fontFamily: 'Lucida Console',
             fontSize: 32,
-            centerX: 0 + Math.random() * 30 - 15,
-            centerY: -this.playerNode.height / 2 + Math.random() * 30 - 15
+            centerX: Math.random() * 30 - 15,
+            centerY: Math.random() * 30 - 15
           } ) );
           this.damageCount++;
           break;

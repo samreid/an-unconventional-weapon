@@ -86,10 +86,32 @@ define( function( require ) {
       stroke: 'blue'
     } ) );
 
+
     this.springBoots = this.newSpringBoots();
     this.springBoots.centerBottom = previousPlatform( 1 ).centerTop;
     this.scene.addChild( this.springBoots );
     this.acquiredSpringBoots = false;
+
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top + 200, 500, 100, {
+      fill: 'black',
+      stroke: 'blue'
+    } ) );
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top + 200, 500, 100, {
+      fill: 'red',
+      stroke: 'blue'
+    } ) );
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
+      fill: 'red',
+      stroke: 'blue'
+    } ) );
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
+      fill: 'red',
+      stroke: 'blue'
+    } ) );
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 8000, 100, {
+      fill: 'red',
+      stroke: 'blue'
+    } ) );
 
     for ( var i = 0; i < 5; i++ ) {
       this.platforms.addChild( new Rectangle( 0, 0, 1000 - i * 20, 100 - i * 2, {

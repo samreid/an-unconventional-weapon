@@ -95,6 +95,8 @@ define( function( require ) {
 
     sentence.sx = -1;
     this.sentence = sentence;
+
+    this.sentence.doneRotating = false;
   }
 
   return inherit( ScreenView, AnUnconventionalWeaponScreenView, {
@@ -131,7 +133,7 @@ define( function( require ) {
       // Handle view animation here.
       this.playerNode.velocity = this.playerNode.velocity.plus( gravity.timesScalar( dt ) );
 
-      if ( this.playerNode.bounds.intersectsBounds( this.sentence.bounds ) ) {
+      if ( this.playerNode.bounds.intersectsBounds( this.sentence.bounds ) && !this.sentence.doneRotating ) {
         this.playerNode.velocity.y = Math.abs( this.playerNode.velocity.y );
         this.playerNode.top = this.sentence.bottom + 10;
         SMASH.play();
@@ -174,6 +176,11 @@ define( function( require ) {
           this.sentence.doneRotating = true;
           this.sentence.sx = 1;
           WOOT.play();
+
+          //launch the rat
+          //this.sentence.getChildAt( 9 ).velocity = new Vector2( 200, -200 );
+          //this.sentence.getChildAt( 10 ).velocity = new Vector2( 200, -200 );
+          //this.sentence.getChildAt( 11 ).velocity = new Vector2( 200, -200 );
         }
         this.sentence.setMatrix( Matrix3.scaling( this.sentence.sx, 1 ) );
         this.sentence.center = center;
@@ -200,6 +207,47 @@ define( function( require ) {
           }
         }
       }
+
+      //this.sentence.rotating = true;
+      if ( this.sentence.doneRotating ) {
+
+        var r = this.sentence.getChildAt( 9 );
+        var a = this.sentence.getChildAt( 10 );
+        var t = this.sentence.getChildAt( 11 );
+        var rTarget = new Vector2( DEFAULT_LAYOUT_BOUNDS.width - 100 - this.sentence.x + 0, this.ground.top - r.height / 2 - this.sentence.y );
+        var aTarget = new Vector2( DEFAULT_LAYOUT_BOUNDS.width - 100 - this.sentence.x + 40, this.ground.top - a.height / 2 - this.sentence.y );
+        var tTarget = new Vector2( DEFAULT_LAYOUT_BOUNDS.width - 100 - this.sentence.x + 80, this.ground.top - t.height / 2 - this.sentence.y );
+
+        var rDist = rTarget.minus( r.center );
+        r.center = r.center.plus( rDist.timesScalar( 0.04 ) );
+        var aDist = aTarget.minus( a.center );
+        a.center = a.center.plus( aDist.timesScalar( 0.03 ) );
+        var tDist = tTarget.minus( t.center );
+        t.center = t.center.plus( tDist.timesScalar( 0.02 ) );
+        if ( rDist.magnitude() < 2 ) {
+          r.text = 'R';
+          r.center = rTarget;
+        }
+        if ( aDist.magnitude() < 2 ) {
+          a.text = 'A';
+          a.center = aTarget;
+        }
+        if ( tDist.magnitude() < 2 ) {
+          t.text = 'T';
+          t.center = tTarget;
+        }
+
+        //this.sentence.getChildAt( 9 ).velocity = this.sentence.getChildAt( 9 ).velocity.plus( gravity.timesScalar( dt ) );
+        //this.sentence.getChildAt( 10 ).velocity = this.sentence.getChildAt( 10 ).velocity.plus( gravity.timesScalar( dt ) );
+        //this.sentence.getChildAt( 11 ).velocity = this.sentence.getChildAt( 11 ).velocity.plus( gravity.timesScalar( dt ) );
+        //
+        //this.sentence.getChildAt( 9 ).position = this.sentence.getChildAt( 9 ).position.plus( this.sentence.getChildAt( 9 ).velocity.timesScalar( dt ) );
+        //this.sentence.getChildAt( 10 ).position = this.sentence.getChildAt( 10 ).position.plus( this.sentence.getChildAt( 10 ).velocity.timesScalar( dt ) );
+        //this.sentence.getChildAt( 11 ).position = this.sentence.getChildAt( 11 ).position.plus( this.sentence.getChildAt( 11 ).velocity.timesScalar( dt ) );
+        //
+        //this.sentence.getChildAt( 9 ).center = this.sentence.getChildAt( 9 ).position;
+      }
+
       if ( Math.abs( vectorTowardTarget ) < 0.001 ) {
         lettersTranslating = false;
       }

@@ -80,6 +80,11 @@ define( function( require ) {
       fill: 'black',
       stroke: 'blue'
     } ) );
+
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top + 200, 500, 100, {
+      fill: 'black',
+      stroke: 'blue'
+    } ) );
   }
 
   return inherit( ScreenView, AnUnconventionalWeaponScreenView, {
@@ -128,6 +133,7 @@ define( function( require ) {
         }
       }
 
+      // Player died
       if ( this.playerNode.position.y > 2000 ) {
         this.context.restartLevel();
       }
@@ -148,7 +154,7 @@ define( function( require ) {
 
       var tx = 0;
       // Scroll the scene with the player as the player moves to the right
-      if ( this.playerNode.position.x > DEFAULT_LAYOUT_BOUNDS.centerX && this.playerNode.position.x < 2300 ) {
+      if ( this.playerNode.position.x > DEFAULT_LAYOUT_BOUNDS.centerX ) {
         tx = DEFAULT_LAYOUT_BOUNDS.centerX - this.playerNode.position.x;
       }
 

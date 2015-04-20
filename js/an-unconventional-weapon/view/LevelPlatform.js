@@ -154,7 +154,7 @@ define( function( require ) {
     this.scene.addChild( this.playerNode );
 
     var randomWords = [ 'DOGS', 'CATS', 'BEES', 'BANANAS', 'MONKEYS', 'BIRDS', 'METEORS', 'HULA HOOPS', 'GAZEBOS',
-      'PIRATES', 'PILATES', 'ASTEROIDS', 'ELECTRONS', 'PHOTONS' ];
+      'PIRATES', 'ASTEROIDS', 'ELECTRONS', 'PHOTONS', 'RED SQUARES', 'BAD GUYS', 'AN UNCONVENTIONAL WEAPON', 'CURVED YELLOW FRUIT' ];
 
     function randomWord() {
       var index = Math.floor( Math.random() * randomWords.length );
@@ -169,12 +169,17 @@ define( function( require ) {
 
     this.fallingSquares = new Node();
     for ( var i = 0; i < 50; i++ ) {
-      var fallingSquare = new Text( randomWord(), {
-        fontFamily: 'Lucida Console',
-        fontSize: 40 + Math.random() * 40,
+      var fallingSquare = new Node( {
         x: Math.random() * 8000,
         y: -8000 + Math.random() * 4000,
-        fill: 'red'
+        children: [
+          new Text( randomWord(), {
+            fontFamily: 'Lucida Console',
+            fontSize: 40 + Math.random() * 40,
+            fill: 'red',
+            rotation: Math.PI / 2 + Math.PI
+          } )
+        ]
       } );
       fallingSquare.speed = Math.random() * 200 + 100;
       this.fallingSquares.addChild( fallingSquare );
@@ -184,12 +189,15 @@ define( function( require ) {
       var dim = 50 + Math.random() * 50;
       accumulated = accumulated + dim;
 
-      var fallingSquare = new Text( randomWord(), {
-        fontFamily: 'Lucida Console',
-        fontSize: 40 + Math.random() * 40,
-        x: 500 + Math.random() * 10 - dim / 2,
+      var fallingSquare = new Node( {
+        x: 8000 + Math.random() * 200 - dim / 2,
         y: -accumulated,
-        fill: 'red'
+        children: [ new Text( randomWord(), {
+          fontFamily: 'Lucida Console',
+          fontSize: 40 + Math.random() * 40,
+          fill: 'red',
+          rotation: Math.PI / 2 + Math.PI
+        } ) ]
       } );
       fallingSquare.speed = Math.random() * 100 + 300;
       this.fallingSquares.addChild( fallingSquare );

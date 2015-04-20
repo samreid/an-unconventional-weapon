@@ -66,29 +66,34 @@ define( function( require ) {
       return self.platforms.getChildAt( self.platforms.getChildrenCount() - 1 - i );
     };
     this.platforms.addChild( new Rectangle( 0, 0, 500, 550, {
-      fill: 'yellow',
+      fill: 'orange',
       bottom: DEFAULT_LAYOUT_BOUNDS.bottom + 500,
-      stroke: 'black'
+      stroke: 'black',
+      lineWidth: 2
     } ) );
 
     this.platforms.addChild( new Rectangle( 600, 400, 500, 100, {
-      fill: 'orange',
-      stroke: 'black'
+      fill: 'yellow',
+      stroke: 'black',
+      lineWidth: 2
     } ) );
 
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top - 200, 500, 100, {
       fill: 'green',
-      stroke: 'black'
+      stroke: 'black',
+      lineWidth: 2
     } ) );
 
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top - 200, 500, 100, {
-      fill: 'black',
-      stroke: 'blue'
+      fill: 'blue',
+      stroke: 'black',
+      lineWidth: 2
     } ) );
 
     var blackPlatform = new Rectangle( previousPlatform().right, previousPlatform().top + 200, 500, 100, {
-      fill: 'black',
-      stroke: 'blue'
+      fill: 'violet',
+      stroke: 'black',
+      lineWidth: 2
     } );
     this.platforms.addChild( blackPlatform );
 
@@ -180,23 +185,57 @@ define( function( require ) {
 
     this.platforms.addChild( new Rectangle( blackPlatform.right, blackPlatform.top + 200, 500, 100, {
       fill: 'black',
-      stroke: 'blue'
+      stroke: 'black',
+      lineWidth:2
     } ) );
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top + 200, 500, 100, {
       fill: 'red',
-      stroke: 'blue'
+      stroke: 'black',
+      lineWidth:2
     } ) );
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
       fill: 'red',
-      stroke: 'blue'
+      stroke: 'black',
+      lineWidth:2
     } ) );
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
       fill: 'red',
-      stroke: 'blue'
+      stroke: 'black',
+      lineWidth:2
+    } ) );
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
+      fill: 'red',
+      stroke: 'black',
+      lineWidth:2
+    } ) );
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
+      fill: 'red',
+      stroke: 'black',
+      lineWidth:2
+    } ) );
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
+      fill: 'red',
+      stroke: 'black',
+      lineWidth:2
+    } ) );
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
+      fill: 'red',
+      stroke: 'black',
+      lineWidth:2
+    } ) );
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
+      fill: 'red',
+      stroke: 'black',
+      lineWidth:2
+    } ) );
+    this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
+      fill: 'red',
+      stroke: 'black',
+      lineWidth:2
     } ) );
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 8000, 100, {
       fill: 'red',
-      stroke: 'blue'
+      stroke: 'black'
     } ) );
 
     this.scene.addChild( new Text( 'Level 4', {
@@ -310,7 +349,7 @@ define( function( require ) {
           var target = this.playerNode.center.plus( Vector2.createPolar( 200 + collectedCount * 1.5, collectedCount * Math.PI / 8 + Date.now() / 1000 * Math.PI / 2 ) );
           star.rotate( Math.PI * dt );
           var delta = target.minus( center );
-          var dx = delta.timesScalar( 0.14 );
+          var dx = delta.timesScalar( 0.2 );
           var newPosition = center.plus( dx );
           star.center = newPosition;
         }

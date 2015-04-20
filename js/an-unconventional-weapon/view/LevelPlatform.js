@@ -153,15 +153,28 @@ define( function( require ) {
 
     this.scene.addChild( this.playerNode );
 
+    var randomWords = [ 'DOGS', 'CATS', 'BEES', 'BANANAS', 'MONKEYS', 'BIRDS', 'METEORS', 'HULA HOOPS', 'GAZEBOS',
+      'PIRATES', 'PILATES', 'ASTEROIDS', 'ELECTRONS', 'PHOTONS' ];
+
+    function randomWord() {
+      var index = Math.floor( Math.random() * randomWords.length );
+      if ( index > randomWords.length - 1 ) {
+        index = randomWord.length - 1;
+      }
+      if ( index < 0 ) {
+        index = 0;
+      }
+      return randomWords[ index ];
+    }
+
     this.fallingSquares = new Node();
     for ( var i = 0; i < 50; i++ ) {
-      var dim = 50 + Math.random() * 50;
-      var fallingSquare = new Rectangle( 0, 0, dim, dim, {
+      var fallingSquare = new Text( randomWord(), {
+        fontFamily: 'Lucida Console',
+        fontSize: 40 + Math.random() * 40,
         x: Math.random() * 8000,
         y: -8000 + Math.random() * 4000,
-        fill: 'red',
-        stroke: 'black',
-        lineWidth: 2
+        fill: 'red'
       } );
       fallingSquare.speed = Math.random() * 200 + 100;
       this.fallingSquares.addChild( fallingSquare );
@@ -170,12 +183,13 @@ define( function( require ) {
     for ( var i = 0; i < 120; i++ ) {
       var dim = 50 + Math.random() * 50;
       accumulated = accumulated + dim;
-      var fallingSquare = new Rectangle( 0, 0, dim, dim, {
-        x: 8000 + Math.random() * 10 - dim / 2,
+
+      var fallingSquare = new Text( randomWord(), {
+        fontFamily: 'Lucida Console',
+        fontSize: 40 + Math.random() * 40,
+        x: 500 + Math.random() * 10 - dim / 2,
         y: -accumulated,
-        fill: 'red',
-        stroke: 'black',
-        lineWidth: 2
+        fill: 'red'
       } );
       fallingSquare.speed = Math.random() * 100 + 300;
       this.fallingSquares.addChild( fallingSquare );
@@ -186,52 +200,52 @@ define( function( require ) {
     this.platforms.addChild( new Rectangle( blackPlatform.right, blackPlatform.top + 200, 500, 100, {
       fill: 'black',
       stroke: 'black',
-      lineWidth:2
+      lineWidth: 2
     } ) );
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top + 200, 500, 100, {
       fill: 'red',
       stroke: 'black',
-      lineWidth:2
+      lineWidth: 2
     } ) );
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
       fill: 'red',
       stroke: 'black',
-      lineWidth:2
+      lineWidth: 2
     } ) );
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
       fill: 'red',
       stroke: 'black',
-      lineWidth:2
+      lineWidth: 2
     } ) );
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
       fill: 'red',
       stroke: 'black',
-      lineWidth:2
+      lineWidth: 2
     } ) );
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
       fill: 'red',
       stroke: 'black',
-      lineWidth:2
+      lineWidth: 2
     } ) );
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
       fill: 'red',
       stroke: 'black',
-      lineWidth:2
+      lineWidth: 2
     } ) );
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
       fill: 'red',
       stroke: 'black',
-      lineWidth:2
+      lineWidth: 2
     } ) );
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
       fill: 'red',
       stroke: 'black',
-      lineWidth:2
+      lineWidth: 2
     } ) );
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 500, 100, {
       fill: 'red',
       stroke: 'black',
-      lineWidth:2
+      lineWidth: 2
     } ) );
     this.platforms.addChild( new Rectangle( previousPlatform().right, previousPlatform().top, 8000, 100, {
       fill: 'red',

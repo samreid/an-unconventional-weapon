@@ -197,7 +197,7 @@ define( function( require ) {
         var destination = this.playerNode.center.plusXY( target - 40, -200 );
         var center = letter.center;
         var delta = destination.minus( center );
-        letter.center = center.plus( delta.timesScalar( 0.2 ) );
+        letter.center = center.plus( delta.timesScalar( 0.3 ) );
       }
     }
   } );

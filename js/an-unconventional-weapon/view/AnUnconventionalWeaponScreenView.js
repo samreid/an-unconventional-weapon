@@ -19,7 +19,7 @@ define( function( require ) {
   var Input = require( 'SCENERY/input/Input' );
 
   var levels = [ LevelSword, LevelGun, LevelRat, LevelPlatform, LevelEnd ];
-  var levelIndex = 3;
+  var levelIndex = 0;
 
   window.TouchPower = {
     leftTouch: false, rightTouch: false, upTouch: false, spacebarTouch: false,

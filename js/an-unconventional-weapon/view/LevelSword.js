@@ -42,6 +42,8 @@ define( function( require ) {
   var swordAngle = Math.PI / 4;
 
   var barrierExists = true;
+  
+  var MAX_RIGHT = 2470;
 
   /**
    * @param {AnUnconventionalWeaponModel} anUnconventionalWeaponModel
@@ -198,8 +200,8 @@ define( function( require ) {
       if ( this.playerNode.position.x < 0 ) {
         this.playerNode.position.x = 0;
       }
-      if ( this.playerNode.position.x > 2310 && barrierExists ) {
-        this.playerNode.position.x = 2310;
+      if ( this.playerNode.position.x > MAX_RIGHT && barrierExists ) {
+        this.playerNode.position.x = MAX_RIGHT;
       }
       if ( this.playerNode.position.x > 2900 ) {
         //new Level
@@ -262,7 +264,7 @@ define( function( require ) {
         }
 
         this.updateLetterNode( this.letterNodes[ this.letterNodes.length - 1 ], -1, dt, swordAngle );
-        if ( this.playerNode.position.x === 2310 ) {
+        if ( this.playerNode.position.x === MAX_RIGHT ) {
           barrierExists = false;
           this.scene.removeChild( this.barrier );
           SMASH.play();

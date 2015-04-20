@@ -168,7 +168,7 @@ define( function( require ) {
     }
 
     this.fallingSquares = new Node();
-    for ( var i = 0; i < 50; i++ ) {
+    for ( var i = 0; i < 40; i++ ) {
       var fallingSquare = new Node( {
         x: Math.random() * 8000,
         y: -8000 + Math.random() * 4000,
@@ -185,7 +185,7 @@ define( function( require ) {
       this.fallingSquares.addChild( fallingSquare );
     }
     var accumulated = 0;
-    for ( var i = 0; i < 120; i++ ) {
+    for ( var i = 0; i < 80; i++ ) {
       var dim = 50 + Math.random() * 50;
       accumulated = accumulated + dim;
 
@@ -371,7 +371,7 @@ define( function( require ) {
           var target = this.playerNode.center.plus( Vector2.createPolar( 200 + collectedCount * 1.5, collectedCount * Math.PI / 8 + Date.now() / 1000 * Math.PI / 2 ) );
           star.rotate( Math.PI * dt );
           var delta = target.minus( center );
-          var dx = delta.timesScalar( 0.2 );
+          var dx = delta.timesScalar( 0.35 );
           var newPosition = center.plus( dx );
           star.center = newPosition;
         }
